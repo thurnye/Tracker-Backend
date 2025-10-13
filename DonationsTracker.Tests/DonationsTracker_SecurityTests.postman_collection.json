@@ -1,0 +1,92 @@
+{
+  "info": {
+    "name": "DonationsTracker Security Tests",
+    "_postman_id": "c1e8c3ca-0000-4000-9000-aaaaaaaaaaaa",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "https://localhost:7002" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth - Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/api/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.sec@test.com\",\n  \"password\": \"Passw0rd!\",\n  \"avatar\": \"a\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Status 200', ()=> pm.response.code===200);",
+          "const json = pm.response.json();",
+          "pm.expect(json.data.token).to.exist;",
+          "pm.environment.set('token', json.data.token);"
+        ], "type": "text/javascript" }
+      }]
+    },
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/api/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"john.sec@test.com\",\n  \"password\": \"Passw0rd!\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Status 200', ()=> pm.response.code===200);",
+          "const json = pm.response.json();",
+          "pm.expect(json.data.token).to.exist;",
+          "pm.environment.set('token', json.data.token);"
+        ], "type": "text/javascript" }
+      }]
+    },
+    {
+      "name": "Donation - Get (Unauthorized)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/donation?page=1&limit=1"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('401 Unauthorized', ()=> pm.response.code===401);"
+        ], "type": "text/javascript" }
+      }]
+    },
+    {
+      "name": "Donation - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": "{{base_url}}/api/donation",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"description\": \"<script>alert('x')</script>Help\", \"amount\": 10 }"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('201 Created or 200 OK', ()=> [200,201].includes(pm.response.code));",
+          "const json = pm.response.json();",
+          "pm.expect(json.data.description || '').to.not.include('<script>');"
+        ], "type": "text/javascript" }
+      }]
+    }
+  ]
+}
