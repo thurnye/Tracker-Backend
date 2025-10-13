@@ -1,32 +1,40 @@
 using System.Text;
 using DonationsTracker.Api.Middlewares;
+using DonationsTracker.Api.Middlewares.Security;
 using DonationsTracker.Core;
+using DonationsTracker.Core.Cache;
 using DonationsTracker.Core.Helpers;
 using DonationsTracker.Core.Interfaces;
+using DonationsTracker.Core.Security;
 using DonationsTracker.Core.Services;
+using DonationsTracker.Core.Validators;
 using DonationsTracker.DB;
 using DonationsTracker.DB.Repositories;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using DonationsTracker.Core.Validators;
-using DonationsTracker.Core.Security;
-using DonationsTracker.Api.Middlewares.Security;
 using StackExchange.Redis;
-using DonationsTracker.Core.Cache;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// --------------------------------------------------------------------
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddControllers();
+// --------------------------------------------------------------------
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationResponseFilter>();
+});
+
 builder.Services.AddEndpointsApiExplorer();
 
-// Swagger
+// --------------------------------------------------------------------
+// Swagger Configuration
+// --------------------------------------------------------------------
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -35,10 +43,10 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 
-    //  Define the security scheme
+    // Security Scheme
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "After login/register, the JWT is returned via the X-Access-Token header. Use it as: Bearer {token}",
+        Description = "Use the JWT as: Bearer {token}",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
@@ -46,8 +54,7 @@ builder.Services.AddSwaggerGen(c =>
         BearerFormat = "JWT"
     });
 
-
-    //  Require it by default on protected endpoints
+    // Security Requirement
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -64,7 +71,9 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// JWT
+// --------------------------------------------------------------------
+// JWT Authentication
+// --------------------------------------------------------------------
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 
@@ -88,7 +97,9 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Core Identity
+// --------------------------------------------------------------------
+// ASP.NET Identity Configuration
+// --------------------------------------------------------------------
 builder.Services
     .AddIdentityCore<ApplicationUser>(options =>
     {
@@ -100,8 +111,6 @@ builder.Services
     .AddEntityFrameworkStores<DonationDbContext>()
     .AddDefaultTokenProviders();
 
-
-// Disable cookie-based login paths 
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/api/auth/login";
@@ -113,40 +122,27 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
-// Validation
-builder.Services.AddControllers(options =>
-{
-    options.Filters.Add<ValidationResponseFilter>();
-});
-// Add FluentValidation 
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddFluentValidationClientsideAdapters();
-
-// DI
-
-// Repositories
-builder.Services.AddScoped<IAuthRepository, AuthRepository>();
-builder.Services.AddScoped<IDonationRepository, DonationRepository>();
-builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-
-
-// Services
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IDonationService, DonationServices>();
-builder.Services.AddScoped<BotDetectionService>();
-builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
-builder.Services.AddHttpContextAccessor();
-
-
-//JWT Service
-builder.Services.AddScoped<JwtService>();
-
-// DbContext
+// --------------------------------------------------------------------
+// Database Context (SQL Server)
+// --------------------------------------------------------------------
 builder.Services.AddDbContext<DonationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// --------------------------------------------------------------------
+// Redis Configuration
+// --------------------------------------------------------------------
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration["Redis:Configuration"];
+    options.InstanceName = builder.Configuration["Redis:InstanceName"];
+});
 
-//CORS
+builder.Services.AddSingleton<IConnectionMultiplexer>(
+    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379"));
+
+// --------------------------------------------------------------------
+// CORS
+// --------------------------------------------------------------------
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -163,25 +159,55 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Redis
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration["Redis:Configuration"];
-    options.InstanceName = builder.Configuration["Redis:InstanceName"];
-});
-builder.Services.AddSingleton<IConnectionMultiplexer>(
-    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379"));
+// --------------------------------------------------------------------
+// Dependency Injection
+// --------------------------------------------------------------------
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IDonationRepository, DonationRepository>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IDonationService, DonationServices>();
+builder.Services.AddScoped<BotDetectionService>();
+builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<CacheInvalidationService>();
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
 
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddHttpContextAccessor();
 
+// --------------------------------------------------------------------
+// Build the app
+// --------------------------------------------------------------------
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// --------------------------------------------------------------------
+// Auto-migrate / create database if not exists (this fixes your issue)
+// --------------------------------------------------------------------
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<DonationDbContext>();
+    try
+    {
+        // Creates DB if it doesn't exist and applies pending migrations
+        db.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"⚠️ Database migration failed: {ex.Message}");
+    }
+}
+
+// --------------------------------------------------------------------
+// Middleware Pipeline
+// --------------------------------------------------------------------
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 
@@ -196,7 +222,4 @@ app.MapControllers();
 
 app.Run();
 
-public partial class Program
-{
-
-}
+public partial class Program { }

@@ -491,3 +491,14 @@
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/DonationsTracker.Tests.pdb
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/DonationsTracker.Tests.genruntimeconfig.cache
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/ref/DonationsTracker.Tests.dll
+/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/bin/Debug/net8.0/CoverletSourceRootsMapping_DonationsTracker.Tests
+/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/DonationsTracker.Tests.csproj.AssemblyReference.cache
+/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/MvcTestingAppManifest.json
+/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/DonationsTracker.Tests.GeneratedMSBuildEditorConfig.editorconfig
+/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/DonationsTracker.Tests.AssemblyInfoInputs.cache
+/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/DonationsTracker.Tests.AssemblyInfo.cs
+/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/DonationsTracker.Tests.csproj.CoreCompileInputs.cache
+/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/DonationsTracker.Tests.sourcelink.json
+/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/DonationsTracker.Tests.dll
+/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/refint/DonationsTracker.Tests.dll
+/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/DonationsTracker.Tests.pdb

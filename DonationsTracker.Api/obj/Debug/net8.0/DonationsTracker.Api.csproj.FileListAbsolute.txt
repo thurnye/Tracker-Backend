@@ -322,3 +322,4 @@
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/obj/Debug/net8.0/DonationsTracker.Api.pdb
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/obj/Debug/net8.0/DonationsTracker.Api.genruntimeconfig.cache
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/obj/Debug/net8.0/ref/DonationsTracker.Api.dll
+/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/obj/Debug/net8.0/DonationsTracker.Api.sourcelink.json
