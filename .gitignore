@@ -1,0 +1,80 @@
+## Build Folders
+./DonationsTracker.Api/bin
+/DonationsTracker.Core/bin
+/DonationsTracker.DB/bin
+/DonationsTracker.Test/bin
+obj/
+out/
+[Bb]uild/
+[Ll]og/
+
+## Visual Studio Files
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+.vs/
+
+## OS Generated Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+## Rider / JetBrains IDE
+.idea/
+*.sln.iml
+
+## NuGet
+*.nupkg
+*.snupkg
+*.nuspec
+packages/
+*.nuget.props
+*.nuget.targets
+.nuget/
+
+## Logs
+*.log
+Logs/
+log/
+*.tlog
+
+## Publish
+wwwroot/
+publish/
+*.Publish.xml
+
+## Secrets and Configs
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.json
+secrets.json
+*.env
+.env.*
+.env.local
+
+## Azure & Docker
+Dockerfile.*
+docker-compose.*
+*.dockerignore
+*.publishsettings
+*.azurePubxml
+
+## Test Results
+TestResults/
+*.coverage
+*.coveragexml
+*.opencover.xml
+*.trx
+
+## Resharper
+_ReSharper*/
+*.DotSettings.user
+*.DotSettings
+
+## Misc
+*.swp
+*.bak
+*.tmp
+*.old
