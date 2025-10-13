@@ -18,6 +18,7 @@ namespace DonationsTracker.Core.Entity
         public string Color { get; set; } = "#000000";  // Hex or color string
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public Boolean? IsActive { get; set; }
 

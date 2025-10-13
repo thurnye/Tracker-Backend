@@ -5,6 +5,7 @@ using DonationsTracker.Core;
 using DonationsTracker.Core.Cache;
 using DonationsTracker.Core.Helpers;
 using DonationsTracker.Core.Interfaces;
+using DonationsTracker.Core.Interfaces.Repositories;
 using DonationsTracker.Core.Security;
 using DonationsTracker.Core.Services;
 using DonationsTracker.Core.Validators;
@@ -165,6 +166,11 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IDonationRepository, DonationRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+builder.Services.AddScoped<IGoalRepository, GoalRepository>();
+builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IWalletRepository, WalletRepository>();
+builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IDonationService, DonationServices>();
@@ -176,6 +182,14 @@ builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>()
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserContextService, UserContextService>();
+
+builder.Services.AddScoped<IUserContextService, UserContextService>();
+builder.Services.AddScoped<IGoalService, GoalService>();
+builder.Services.AddScoped<IBudgetService, BudgetService>();
+builder.Services.AddScoped<IWalletService, WalletService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+
 
 // --------------------------------------------------------------------
 // Build the app

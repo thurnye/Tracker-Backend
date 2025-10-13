@@ -19,6 +19,8 @@ namespace DonationsTracker.Core.Models
         public string? ResourcesNeeded { get; set; }
         public string? Obstacles { get; set; }
         public string? Milestones { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation
         public User User { get; set; } = null!;

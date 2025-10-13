@@ -18,6 +18,8 @@ namespace DonationsTracker.Core.Models
         public string? State { get; set; }
         public string? Country { get; set; }
         public string? PostalCode { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 
     public class LoginRequest
@@ -33,6 +35,7 @@ namespace DonationsTracker.Core.Models
         public string LastName { get; set; }
         public string Email { get; set; }
         public string Avatar { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 
     public class AuthResponse

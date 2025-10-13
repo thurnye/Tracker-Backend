@@ -21,7 +21,9 @@ namespace DonationsTracker.Core.Entity
         public DateTime? EndDate { get; set; }
         public string? Status { get; set; }
         public decimal? AmountSpent { get; set; }
-        public Boolean? IsActive { get; set; }
+        public bool IsActive { get; set; }
+         public DateTime? UpdatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
 
         // Navigation
         public ApplicationUser User { get; set; } = null!;

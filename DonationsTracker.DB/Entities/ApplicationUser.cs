@@ -16,4 +16,6 @@ public class ApplicationUser : IdentityUser
     public string? Country { get; set; }
     public string? PostalCode { get; set; }
     public Boolean? IsActive { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

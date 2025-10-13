@@ -23,7 +23,9 @@ namespace DonationsTracker.Core.Entity
         public string? Obstacles { get; set; }
         public string? Milestones { get; set; }
 
-        public Boolean? IsActive { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation
         public ApplicationUser User { get; set; } = null!;

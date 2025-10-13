@@ -24,7 +24,9 @@ namespace DonationsTracker.Core.Entity
         public DateTime? ExpiryDate { get; set; }
         public int? CVV { get; set; }
 
-        public Boolean? IsActive { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation
         public ApplicationUser User { get; set; } = null!;

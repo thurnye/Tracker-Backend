@@ -18,6 +18,8 @@ namespace DonationsTracker.Core.Models
         public DateTime? EndDate { get; set; }
         public string? Status { get; set; }
         public decimal? AmountSpent { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation
         public User User { get; set; } = null!;

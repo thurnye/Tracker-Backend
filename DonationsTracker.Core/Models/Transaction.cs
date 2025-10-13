@@ -17,6 +17,8 @@ namespace DonationsTracker.Core.Models
         public string? Reference { get; set; }
         public string? CurrencyCode { get; set; }
         public decimal? TransactionFee { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation
         public User User { get; set; } = null!;

@@ -14,6 +14,8 @@ namespace DonationsTracker.Core.Models
         public decimal? InterestRate { get; set; }
         public DateTime? LastTransactionDate { get; set; }
         public DateTime? PaymentDueDate { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Optional card metadata
         public string? CardType { get; set; }     // e.g. "Visa", "Mastercard"
