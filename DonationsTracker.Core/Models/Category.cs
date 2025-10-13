@@ -1,7 +1,4 @@
-
-using DonationsTracker.DB;
-
-namespace DonationsTracker.Core.Entity
+namespace DonationsTracker.Core.Models
 {
     public class Category
     {
@@ -23,7 +20,7 @@ namespace DonationsTracker.Core.Entity
         public bool IsActive { get; set; }
 
         // Navigation
-        public ApplicationUser User { get; set; } = null!;
+        public User User { get; set; } = null!;
         public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
         public ICollection<Budget> Budgets { get; set; } = new List<Budget>();
         public ICollection<Goal> Goals { get; set; } = new List<Goal>();
