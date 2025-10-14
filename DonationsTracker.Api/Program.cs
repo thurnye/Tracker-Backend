@@ -11,6 +11,7 @@ using DonationsTracker.Core.Services;
 using DonationsTracker.Core.Validators;
 using DonationsTracker.DB;
 using DonationsTracker.DB.Repositories;
+using DonationsTracker.DB.Seed;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -171,6 +172,7 @@ builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IWalletRepository, WalletRepository>();
 builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IDonationService, DonationServices>();
@@ -189,6 +191,7 @@ builder.Services.AddScoped<IGoalService, GoalService>();
 builder.Services.AddScoped<IBudgetService, BudgetService>();
 builder.Services.AddScoped<IWalletService, WalletService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 
 // --------------------------------------------------------------------
@@ -233,6 +236,15 @@ app.UseAuthorization();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.MapControllers();
+
+// populate db with seed data
+// using (var scope = app.Services.CreateScope())
+// {
+//     var services = scope.ServiceProvider;
+//     var context = services.GetRequiredService<DonationDbContext>();
+//     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+//     await DataSeeder.SeedAsync(context, userManager);
+// }
 
 app.Run();
 

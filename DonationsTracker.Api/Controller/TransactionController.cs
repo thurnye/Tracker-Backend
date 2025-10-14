@@ -1,5 +1,6 @@
 using DonationsTracker.Core.Entity;
 using DonationsTracker.Core.Interfaces;
+using DonationsTracker.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,29 +23,106 @@ namespace DonationsTracker.Api.Controllers
         public async Task<IActionResult> CreateUpdateTransaction([FromBody] Transaction transaction)
         {
             var result = await _transactionService.CreateUpdateTransactionAsync(transaction);
-            return Ok(result);
+
+            return Ok(new ApiResponse<Transaction>
+            {
+                Data = result,
+                Meta = new ApiMeta
+                {
+                    RequestId = Guid.NewGuid().ToString(),
+                    Timestamp = DateTime.UtcNow
+                }
+            });
         }
 
         [HttpGet]
         public async Task<IActionResult> GetUserTransactions()
         {
             var transactions = await _transactionService.GetUserTransactionsAsync();
-            return Ok(transactions);
+
+            return Ok(new ApiResponse<List<Transaction>>
+            {
+                Data = transactions.ToList(),
+                Meta = new ApiMeta
+                {
+                    RequestId = Guid.NewGuid().ToString(),
+                    Timestamp = DateTime.UtcNow
+                }
+            });
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTransactionById(string id)
         {
             var transaction = await _transactionService.GetTransactionAsync(id);
-            if (transaction == null) return NotFound();
-            return Ok(transaction);
+
+            if (transaction == null)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    Data = null,
+                    Errors = new List<ApiError>
+                    {
+                        new ApiError
+                        {
+                            Code = ErrorCode.NOT_FOUND,
+                            Message = $"Transaction with ID {id} was not found."
+                        }
+                    },
+                    Meta = new ApiMeta
+                    {
+                        RequestId = Guid.NewGuid().ToString(),
+                        Timestamp = DateTime.UtcNow
+                    }
+                });
+            }
+
+            return Ok(new ApiResponse<Transaction>
+            {
+                Data = transaction,
+                Meta = new ApiMeta
+                {
+                    RequestId = Guid.NewGuid().ToString(),
+                    Timestamp = DateTime.UtcNow
+                }
+            });
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTransaction(string id)
         {
             var deleted = await _transactionService.DeleteTransactionAsync(id);
-            return deleted ? NoContent() : NotFound();
+
+            if (!deleted)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    Data = null,
+                    Errors = new List<ApiError>
+                    {
+                        new ApiError
+                        {
+                            Code = ErrorCode.NOT_FOUND,
+                            Message = $"Transaction with ID {id} was not found."
+                        }
+                    },
+                    Meta = new ApiMeta
+                    {
+                        RequestId = Guid.NewGuid().ToString(),
+                        Timestamp = DateTime.UtcNow
+                    }
+                });
+            }
+
+            return Ok(new ApiResponse<object>
+            {
+                Data = $"Transaction with ID {id} deleted successfully.",
+                Meta = new ApiMeta
+                {
+                    RequestId = Guid.NewGuid().ToString(),
+                    Timestamp = DateTime.UtcNow
+                }
+            });
         }
     }
 }
