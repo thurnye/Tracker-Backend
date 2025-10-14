@@ -4,6 +4,7 @@ using DonationsTracker.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DonationsTracker.Core.DTOs;
+using DonationsTracker.Core.RequestModel;
 
 namespace DonationsTracker.Api.Controllers
 {

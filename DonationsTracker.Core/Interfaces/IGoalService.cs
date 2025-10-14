@@ -1,5 +1,6 @@
 using DonationsTracker.Core.DTOs;
 using DonationsTracker.Core.Entity;
+using DonationsTracker.Core.RequestModel;
 
 namespace DonationsTracker.Core.Interfaces
 {
@@ -7,7 +8,7 @@ namespace DonationsTracker.Core.Interfaces
     {
         Task<IEnumerable<GoalDTO>> GetUserGoalsAsync();
         Task<GoalDTO?> GetGoalAsync(string id);
-        Task<GoalDTO> CreateUpdateGoalAsync(Goal goal);  
+        Task<GoalDTO> CreateUpdateGoalAsync(GoalRequest goal);  
         Task<bool> DeleteGoalAsync(string id);
     }
 }

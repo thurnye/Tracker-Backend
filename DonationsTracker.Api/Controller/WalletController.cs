@@ -3,6 +3,7 @@ using DonationsTracker.Core.Interfaces;
 using DonationsTracker.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using DonationsTracker.Core.RequestModel;
 
 namespace DonationsTracker.Api.Controllers
 {
@@ -20,7 +21,7 @@ namespace DonationsTracker.Api.Controllers
 
         // create + update
         [HttpPost("create-update")]
-        public async Task<IActionResult> CreateUpdateWallet([FromBody] Wallet wallet)
+        public async Task<IActionResult> CreateUpdateWallet([FromBody] WalletRequest wallet)
         {
             var result = await _walletService.CreateUpdateWalletAsync(wallet);
 

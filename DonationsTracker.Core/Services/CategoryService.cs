@@ -6,6 +6,7 @@ using DonationsTracker.Core.Interfaces;
 using DonationsTracker.Core.Interfaces.Repositories;
 using DonationsTracker.Core.Helpers;
 using DonationsTracker.Core.Cache;
+using DonationsTracker.Core.RequestModel;
 
 namespace DonationsTracker.Core.Services
 {

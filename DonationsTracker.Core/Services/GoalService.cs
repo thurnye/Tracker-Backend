@@ -7,6 +7,7 @@ using DonationsTracker.Core.Interfaces.Repositories;
 using DonationsTracker.Core.Helpers;
 using DonationsTracker.Core.Cache;
 using DonationsTracker.Core.DTOs;
+using DonationsTracker.Core.RequestModel;
 
 namespace DonationsTracker.Core.Services
 {
@@ -115,10 +116,9 @@ namespace DonationsTracker.Core.Services
             return mapped;
         }
 
-        public async Task<GoalDTO> CreateUpdateGoalAsync(Goal goal)
+        public async Task<GoalDTO> CreateUpdateGoalAsync(GoalRequest goal)
         {
             var userId = _userContext.GetUserId();
-            goal.UserId = userId;
 
             Goal saved;
 
@@ -145,10 +145,21 @@ namespace DonationsTracker.Core.Services
             }
             else
             {
-                goal.Id = Guid.NewGuid().ToString();
-                goal.CreatedAt = DateTime.UtcNow;
-                goal.IsActive = true;
-                saved = await _goalRepository.CreateGoalAsync(goal);
+                var newGoal = new Goal
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserId = userId,
+                    GoalName = goal.GoalName,
+                    GoalDescription = goal.GoalDescription,
+                    Priority = goal.Priority,
+                    TargetValue = goal.TargetValue,
+                    Deadline = goal.Deadline,
+                    CategoryId = goal.CategoryId,
+                    Progress = goal.Progress,
+                    CreatedAt = DateTime.UtcNow,
+                    IsActive = true
+                };
+                saved = await _goalRepository.CreateGoalAsync(newGoal);
             }
 
             _ = _invalidation.InvalidateKeyAsync($"{GoalItemPrefix}{saved.Id}");

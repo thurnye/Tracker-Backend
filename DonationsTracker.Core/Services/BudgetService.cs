@@ -8,6 +8,7 @@ using DonationsTracker.Core.Helpers;
 using DonationsTracker.Core.Cache;
 using DonationsTracker.Core.DTOs;
 using DonationsTracker.Core.DTOs.Shared;
+using DonationsTracker.Core.RequestModel;
 
 namespace DonationsTracker.Core.Services
 {

@@ -7,6 +7,7 @@ using DonationsTracker.Core.Interfaces.Repositories;
 using DonationsTracker.Core.Helpers;
 using DonationsTracker.Core.Cache;
 using DonationsTracker.Core.DTOs;
+using DonationsTracker.Core.RequestModel;
 
 namespace DonationsTracker.Core.Services
 {
@@ -114,10 +115,9 @@ namespace DonationsTracker.Core.Services
             return mapped;
         }
 
-        public async Task<TransactionDTO> CreateUpdateTransactionAsync(Transaction transaction)
+        public async Task<TransactionDTO> CreateUpdateTransactionAsync(TransactionRequest transaction)
         {
             var userId = _userContext.GetUserId();
-            transaction.UserId = userId;
 
             Transaction saved;
             if (!string.IsNullOrEmpty(transaction.Id))
@@ -143,9 +143,27 @@ namespace DonationsTracker.Core.Services
             }
             else
             {
-                transaction.CreatedAt = DateTime.UtcNow;
-                transaction.IsActive = true;
-                saved = await _transactionRepository.CreateTransactionAsync(transaction);
+                var newTransaction = new Transaction
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserId = userId,
+                    WalletId = transaction.WalletId,
+                    CategoryId = transaction.CategoryId,
+                    TransactionDate = transaction.TransactionDate,
+                    TransactionAmount = transaction.TransactionAmount,
+                    TransactionType = transaction.TransactionType,
+                    MerchantName = transaction.MerchantName,
+                    Description = transaction.Description,
+                    Status = transaction.Status,
+                    Method = transaction.Method,
+                    Location = transaction.Location,
+                    Reference = transaction.Reference,
+                    CurrencyCode = transaction.CurrencyCode,
+                    TransactionFee = transaction.TransactionFee,
+                    CreatedAt = DateTime.UtcNow,
+                    IsActive = true,
+                };
+                saved = await _transactionRepository.CreateTransactionAsync(newTransaction);
             }
 
             _ = _invalidation.InvalidateByPrefixAsync(TransactionListPrefix);

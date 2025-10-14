@@ -4,6 +4,7 @@ using DonationsTracker.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DonationsTracker.Core.DTOs;
+using DonationsTracker.Core.RequestModel;
 
 namespace DonationsTracker.Api.Controllers
 {
@@ -21,7 +22,7 @@ namespace DonationsTracker.Api.Controllers
 
 
         [HttpPost("create-update")]
-        public async Task<IActionResult> CreateUpdateGoal([FromBody] Goal goal)
+        public async Task<IActionResult> CreateUpdateGoal([FromBody] GoalRequest goal)
         {
             var result = await _goalService.CreateUpdateGoalAsync(goal);
 

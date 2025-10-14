@@ -6,7 +6,7 @@ using DonationsTracker.Core.Interfaces;
 using DonationsTracker.Core.Interfaces.Repositories;
 using DonationsTracker.Core.Helpers;
 using DonationsTracker.Core.Cache;
-using DonationsTracker.Core.DTOs;
+using DonationsTracker.Core.RequestModel;
 
 namespace DonationsTracker.Core.Services
 {
@@ -35,7 +35,7 @@ namespace DonationsTracker.Core.Services
             _invalidation = invalidation;
         }
 
-        // ✅ Get all wallets for the logged-in user
+        // Get all wallets for the logged-in user
         public async Task<IEnumerable<WalletDTO>> GetUserWalletsAsync()
         {
             var userId = _userContext.GetUserId();
@@ -75,7 +75,7 @@ namespace DonationsTracker.Core.Services
             return mapped;
         }
 
-        // ✅ Get a single wallet by ID
+        // Get a single wallet by ID
         public async Task<WalletDTO?> GetWalletAsync(string id)
         {
             var cacheKey = $"{WalletItemPrefix}{id}";
@@ -117,11 +117,11 @@ namespace DonationsTracker.Core.Services
             return mapped;
         }
 
-        // ✅ Create or update wallet
-        public async Task<WalletDTO> CreateUpdateWalletAsync(Wallet wallet)
+        // Create or update wallet
+        public async Task<WalletDTO> CreateUpdateWalletAsync(WalletRequest wallet)
         {
             var userId = _userContext.GetUserId();
-            wallet.UserId = userId;
+            
 
             Wallet saved;
 
@@ -155,10 +155,28 @@ namespace DonationsTracker.Core.Services
             }
             else
             {
-                wallet.Id = Guid.NewGuid().ToString();
-                wallet.CreatedAt = DateTime.UtcNow;
-                wallet.IsActive = true;
-                saved = await _walletRepository.CreateWalletAsync(wallet);
+                var newWallet = new Wallet
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserId = userId,
+                    WalletName = wallet.WalletName,
+                    WalletType = wallet.WalletType,
+                    BankName = wallet.BankName,
+                    AccountNumber = wallet.AccountNumber,
+                    Currency = wallet.Currency,
+                    Balance = wallet.Balance,
+                    CreditLimit = wallet.CreditLimit,
+                    InterestRate = wallet.InterestRate,
+                    LastTransactionDate = wallet.LastTransactionDate,
+                    PaymentDueDate = wallet.PaymentDueDate,
+                    CardType = wallet.CardType,
+                    ExpiryDate = wallet.ExpiryDate,
+                    CVV = wallet.CVV,
+                    CategoryId = wallet.CategoryId,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                };
+                saved = await _walletRepository.CreateWalletAsync(newWallet);
             }
 
             // Invalidate cache for wallets
@@ -169,7 +187,7 @@ namespace DonationsTracker.Core.Services
             return saved.ToWalletDTO();
         }
 
-        // ✅ Delete wallet
+        // Delete wallet
         public async Task<bool> DeleteWalletAsync(string id)
         {
             var deleted = await _walletRepository.DeleteWalletAsync(id);

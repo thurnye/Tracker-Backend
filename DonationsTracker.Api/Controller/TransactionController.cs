@@ -3,6 +3,7 @@ using DonationsTracker.Core.Interfaces;
 using DonationsTracker.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using DonationsTracker.Core.RequestModel;
 
 namespace DonationsTracker.Api.Controllers
 {
@@ -20,7 +21,7 @@ namespace DonationsTracker.Api.Controllers
 
         // Combined create + update
         [HttpPost("create-update")]
-        public async Task<IActionResult> CreateUpdateTransaction([FromBody] Transaction transaction)
+        public async Task<IActionResult> CreateUpdateTransaction([FromBody] TransactionRequest transaction)
         {
             var result = await _transactionService.CreateUpdateTransactionAsync(transaction);
 

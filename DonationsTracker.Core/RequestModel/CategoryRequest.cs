@@ -1,7 +1,7 @@
 
 using DonationsTracker.DB;
 
-namespace DonationsTracker.Core.Entity
+namespace DonationsTracker.Core.RequestModel
 {
     public class CategoryRequest
     {

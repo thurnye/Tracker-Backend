@@ -1,4 +1,5 @@
 using DonationsTracker.Core.Entity;
+using DonationsTracker.Core.RequestModel;
 
 namespace DonationsTracker.Core.Interfaces
 {
@@ -6,7 +7,7 @@ namespace DonationsTracker.Core.Interfaces
     {
         Task<IEnumerable<TransactionDTO>> GetUserTransactionsAsync();
         Task<TransactionDTO?> GetTransactionAsync(string id);
-        Task<TransactionDTO> CreateUpdateTransactionAsync(Transaction transaction);
+        Task<TransactionDTO> CreateUpdateTransactionAsync(TransactionRequest transaction);
         Task<bool> DeleteTransactionAsync(string id);
     }
 }

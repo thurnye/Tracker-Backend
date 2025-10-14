@@ -1,4 +1,5 @@
 using DonationsTracker.Core.Entity;
+using DonationsTracker.Core.RequestModel;
 
 namespace DonationsTracker.Core.Interfaces
 {
