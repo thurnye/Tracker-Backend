@@ -18,13 +18,13 @@ namespace DonationsTracker.Api.Controllers
             _transactionService = transactionService;
         }
 
-        // ✅ Combined create + update
+        // Combined create + update
         [HttpPost("create-update")]
         public async Task<IActionResult> CreateUpdateTransaction([FromBody] Transaction transaction)
         {
             var result = await _transactionService.CreateUpdateTransactionAsync(transaction);
 
-            return Ok(new ApiResponse<Transaction>
+            return Ok(new ApiResponse<TransactionDTO>
             {
                 Data = result,
                 Meta = new ApiMeta
@@ -40,7 +40,7 @@ namespace DonationsTracker.Api.Controllers
         {
             var transactions = await _transactionService.GetUserTransactionsAsync();
 
-            return Ok(new ApiResponse<List<Transaction>>
+            return Ok(new ApiResponse<List<TransactionDTO>>
             {
                 Data = transactions.ToList(),
                 Meta = new ApiMeta
@@ -77,7 +77,7 @@ namespace DonationsTracker.Api.Controllers
                 });
             }
 
-            return Ok(new ApiResponse<Transaction>
+            return Ok(new ApiResponse<TransactionDTO>
             {
                 Data = transaction,
                 Meta = new ApiMeta

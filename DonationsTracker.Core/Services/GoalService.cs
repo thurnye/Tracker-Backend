@@ -6,6 +6,7 @@ using DonationsTracker.Core.Interfaces;
 using DonationsTracker.Core.Interfaces.Repositories;
 using DonationsTracker.Core.Helpers;
 using DonationsTracker.Core.Cache;
+using DonationsTracker.Core.DTOs;
 
 namespace DonationsTracker.Core.Services
 {
@@ -34,7 +35,7 @@ namespace DonationsTracker.Core.Services
             _invalidation = invalidation;
         }
 
-        public async Task<IEnumerable<Goal>> GetUserGoalsAsync()
+        public async Task<IEnumerable<GoalDTO>> GetUserGoalsAsync()
         {
             var userId = _userContext.GetUserId();
             var cacheKey = $"{GoalListPrefix}:{userId}";
@@ -44,8 +45,8 @@ namespace DonationsTracker.Core.Services
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation(" Cache hit for goals {UserId}", userId);
-                    return JsonSerializer.Deserialize<IEnumerable<Goal>>(cached)!;
+                    _logger.LogInformation("Cache hit for goals {UserId}", userId);
+                    return JsonSerializer.Deserialize<IEnumerable<GoalDTO>>(cached)!;
                 }
             }
             catch (Exception ex)
@@ -54,24 +55,26 @@ namespace DonationsTracker.Core.Services
             }
 
             var goals = await _goalRepository.GetGoalsByUserAsync(userId);
+            var mapped = goals.Select(g => g.ToGoalDTO()).ToList();
 
             try
             {
                 await _cache.SetStringAsync(
                     cacheKey,
-                    JsonSerializer.Serialize(goals),
+                    JsonSerializer.Serialize(mapped),
                     new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) }
                 );
+                _logger.LogInformation("Cached goals for {UserId}", userId);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to cache goals {UserId}", userId);
+                _logger.LogWarning(ex, "Failed to cache goals for {UserId}", userId);
             }
 
-            return goals;
+            return mapped;
         }
 
-        public async Task<Goal?> GetGoalAsync(string id)
+        public async Task<GoalDTO?> GetGoalAsync(string id)
         {
             var cacheKey = $"{GoalItemPrefix}{id}";
 
@@ -80,8 +83,8 @@ namespace DonationsTracker.Core.Services
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation(" Cache hit for goal {Id}", id);
-                    return JsonSerializer.Deserialize<Goal>(cached);
+                    _logger.LogInformation("Cache hit for goal {Id}", id);
+                    return JsonSerializer.Deserialize<GoalDTO>(cached);
                 }
             }
             catch (Exception ex)
@@ -93,26 +96,30 @@ namespace DonationsTracker.Core.Services
             if (goal == null)
                 throw new KeyNotFoundException($"Goal with ID {id} not found.");
 
+            var mapped = goal.ToGoalDTO();
+
             try
             {
                 await _cache.SetStringAsync(
                     cacheKey,
-                    JsonSerializer.Serialize(goal),
+                    JsonSerializer.Serialize(mapped),
                     new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) }
                 );
+                _logger.LogInformation("Cached goal {Id}", id);
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Failed to cache goal {Id}", id);
             }
 
-            return goal;
+            return mapped;
         }
 
-        public async Task<Goal> CreateUpdateGoalAsync(Goal goal)
+        public async Task<GoalDTO> CreateUpdateGoalAsync(Goal goal)
         {
             var userId = _userContext.GetUserId();
             goal.UserId = userId;
+
             Goal saved;
 
             if (!string.IsNullOrEmpty(goal.Id))
@@ -130,13 +137,15 @@ namespace DonationsTracker.Core.Services
                 existingGoal.TargetValue = goal.TargetValue;
                 existingGoal.Deadline = goal.Deadline;
                 existingGoal.CategoryId = goal.CategoryId;
-                existingGoal.IsActive = true;
+                existingGoal.Progress = goal.Progress;
                 existingGoal.UpdatedAt = DateTime.UtcNow;
+                existingGoal.IsActive = true;
 
                 saved = await _goalRepository.UpdateGoalAsync(existingGoal);
             }
             else
             {
+                goal.Id = Guid.NewGuid().ToString();
                 goal.CreatedAt = DateTime.UtcNow;
                 goal.IsActive = true;
                 saved = await _goalRepository.CreateGoalAsync(goal);
@@ -146,7 +155,7 @@ namespace DonationsTracker.Core.Services
             _ = _invalidation.InvalidateByPrefixAsync(GoalListPrefix);
             _logger.LogInformation("Cache invalidated for goal {Id}", saved.Id);
 
-            return saved;
+            return saved.ToGoalDTO();
         }
 
         public async Task<bool> DeleteGoalAsync(string id)
@@ -156,6 +165,7 @@ namespace DonationsTracker.Core.Services
             {
                 _ = _invalidation.InvalidateKeyAsync($"{GoalItemPrefix}{id}");
                 _ = _invalidation.InvalidateByPrefixAsync(GoalListPrefix);
+                _logger.LogInformation("Cache invalidated after deleting goal {Id}", id);
             }
             return deleted;
         }

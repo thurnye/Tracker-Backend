@@ -7,6 +7,7 @@ using DonationsTracker.Core.Interfaces.Repositories;
 using DonationsTracker.Core.Helpers;
 using DonationsTracker.Core.Cache;
 using DonationsTracker.Core.DTOs;
+using DonationsTracker.Core.DTOs.Shared;
 
 namespace DonationsTracker.Core.Services
 {
@@ -55,7 +56,7 @@ namespace DonationsTracker.Core.Services
             }
 
             var budgets = await _budgetRepository.GetBudgetsByUserAsync(userId);
-            var mapped = budgets.Select(MapToDto).ToList();
+            var mapped = budgets.Select(b => b.ToBudgetDTO()).ToList();
 
             try
             {
@@ -96,7 +97,7 @@ namespace DonationsTracker.Core.Services
             if (budget == null)
                 throw new KeyNotFoundException($"Budget with ID {id} not found.");
 
-            var mapped = MapToDto(budget);
+            var mapped = budget.ToBudgetDTO();
 
             try
             {
@@ -180,7 +181,7 @@ namespace DonationsTracker.Core.Services
             _ = _invalidation.InvalidateKeyAsync($"{BudgetItemPrefix}{saved.Id}");
             _logger.LogInformation("Cache invalidated after budget create/update for user {UserId}", userId);
 
-            return MapToDto(saved);
+            return saved.ToBudgetDTO();
         }
 
         public async Task<bool> DeleteBudgetAsync(string id)
@@ -194,50 +195,5 @@ namespace DonationsTracker.Core.Services
             }
             return deleted;
         }
-
-
-        private static BudgetDTO MapToDto(Budget b)
-        {
-            return new BudgetDTO
-            {
-                Id = b.Id,
-                BudgetName = b.BudgetName,
-                BudgetAmount = b.BudgetAmount,
-                SpendingType = b.SpendingType,
-                Currency = b.Currency,
-                Status = b.Status,
-                Date = b.Date,
-                StartDate = b.StartDate,
-                EndDate = b.EndDate,
-                Frequency = b.Frequency,
-                Notes = b.Notes,
-                BudgetType = b.BudgetType,
-                IncomeSource = b.IncomeSource,
-                AmountSpent = b.AmountSpent,
-                IsActive = b.IsActive,
-
-                // Include simplified user and category
-                User = b.User != null
-                    ? new UserLiteDto
-                    {
-                        Id = b.User.Id,
-                        FirstName = b.User.FirstName,
-                        LastName = b.User.LastName
-                    }
-                    : null,
-
-                Category = b.Category != null
-                    ? new CategoryLiteDto
-                    {
-                        Id = b.Category.Id,
-                        Type = b.Category.Type,
-                        Name = b.Category.Name,
-                        Icon = b.Category.Icon,
-                        Color = b.Category.Color
-                    }
-                    : null
-            };
-        }
-
     }
 }

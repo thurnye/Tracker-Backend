@@ -24,7 +24,7 @@ namespace DonationsTracker.Api.Controllers
         {
             var result = await _walletService.CreateUpdateWalletAsync(wallet);
 
-            return Ok(new ApiResponse<Wallet>
+            return Ok(new ApiResponse<WalletDTO>
             {
                 Data = result,
                 Meta = new ApiMeta
@@ -40,7 +40,7 @@ namespace DonationsTracker.Api.Controllers
         {
             var wallets = await _walletService.GetUserWalletsAsync();
 
-            return Ok(new ApiResponse<List<Wallet>>
+            return Ok(new ApiResponse<List<WalletDTO>>
             {
                 Data = wallets.ToList(),
                 Meta = new ApiMeta
@@ -77,7 +77,7 @@ namespace DonationsTracker.Api.Controllers
                 });
             }
 
-            return Ok(new ApiResponse<Wallet>
+            return Ok(new ApiResponse<WalletDTO>
             {
                 Data = wallet,
                 Meta = new ApiMeta

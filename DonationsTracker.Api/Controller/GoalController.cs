@@ -3,6 +3,7 @@ using DonationsTracker.Core.Interfaces;
 using DonationsTracker.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using DonationsTracker.Core.DTOs;
 
 namespace DonationsTracker.Api.Controllers
 {
@@ -24,7 +25,7 @@ namespace DonationsTracker.Api.Controllers
         {
             var result = await _goalService.CreateUpdateGoalAsync(goal);
 
-            return Ok(new ApiResponse<Goal>
+            return Ok(new ApiResponse<GoalDTO>
             {
                 Data = result,
                 Meta = new ApiMeta
@@ -40,7 +41,7 @@ namespace DonationsTracker.Api.Controllers
         {
             var goals = await _goalService.GetUserGoalsAsync();
 
-            return Ok(new ApiResponse<List<Goal>>
+            return Ok(new ApiResponse<List<GoalDTO>>
             {
                 Data = goals.ToList(),
                 Meta = new ApiMeta
@@ -50,6 +51,7 @@ namespace DonationsTracker.Api.Controllers
                 }
             });
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGoalById(string id)
@@ -77,7 +79,7 @@ namespace DonationsTracker.Api.Controllers
                 });
             }
 
-            return Ok(new ApiResponse<Goal>
+            return Ok(new ApiResponse<GoalDTO>
             {
                 Data = goal,
                 Meta = new ApiMeta

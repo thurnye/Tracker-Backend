@@ -6,6 +6,7 @@ using DonationsTracker.Core.Interfaces;
 using DonationsTracker.Core.Interfaces.Repositories;
 using DonationsTracker.Core.Helpers;
 using DonationsTracker.Core.Cache;
+using DonationsTracker.Core.DTOs;
 
 namespace DonationsTracker.Core.Services
 {
@@ -34,7 +35,7 @@ namespace DonationsTracker.Core.Services
             _invalidation = invalidation;
         }
 
-        public async Task<IEnumerable<Transaction>> GetUserTransactionsAsync()
+        public async Task<IEnumerable<TransactionDTO>> GetUserTransactionsAsync()
         {
             var userId = _userContext.GetUserId();
             var cacheKey = $"{TransactionListPrefix}:{userId}";
@@ -45,7 +46,7 @@ namespace DonationsTracker.Core.Services
                 if (!string.IsNullOrEmpty(cached))
                 {
                     _logger.LogInformation("Cache hit for transactions of user {UserId}", userId);
-                    return JsonSerializer.Deserialize<IEnumerable<Transaction>>(cached)!;
+                    return JsonSerializer.Deserialize<IEnumerable<TransactionDTO>>(cached)!;
                 }
             }
             catch (Exception ex)
@@ -54,12 +55,13 @@ namespace DonationsTracker.Core.Services
             }
 
             var transactions = await _transactionRepository.GetTransactionsByUserAsync(userId);
+            var mapped = transactions.Select(t => t.ToTransactionDTO()).ToList();
 
             try
             {
                 await _cache.SetStringAsync(
                     cacheKey,
-                    JsonSerializer.Serialize(transactions),
+                    JsonSerializer.Serialize(mapped),
                     new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) }
                 );
                 _logger.LogInformation("Cached transactions for user {UserId}", userId);
@@ -69,10 +71,10 @@ namespace DonationsTracker.Core.Services
                 _logger.LogWarning(ex, "Failed to cache transactions for user {UserId}", userId);
             }
 
-            return transactions;
+            return mapped;
         }
 
-        public async Task<Transaction?> GetTransactionAsync(string id)
+        public async Task<TransactionDTO?> GetTransactionAsync(string id)
         {
             var cacheKey = $"{TransactionItemPrefix}{id}";
 
@@ -82,7 +84,7 @@ namespace DonationsTracker.Core.Services
                 if (!string.IsNullOrEmpty(cached))
                 {
                     _logger.LogInformation("Cache hit for transaction {Id}", id);
-                    return JsonSerializer.Deserialize<Transaction>(cached);
+                    return JsonSerializer.Deserialize<TransactionDTO>(cached);
                 }
             }
             catch (Exception ex)
@@ -94,11 +96,13 @@ namespace DonationsTracker.Core.Services
             if (transaction == null)
                 throw new KeyNotFoundException($"Transaction with ID {id} not found.");
 
+            var mapped = transaction.ToTransactionDTO();
+
             try
             {
                 await _cache.SetStringAsync(
                     cacheKey,
-                    JsonSerializer.Serialize(transaction),
+                    JsonSerializer.Serialize(mapped),
                     new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) }
                 );
             }
@@ -107,15 +111,15 @@ namespace DonationsTracker.Core.Services
                 _logger.LogWarning(ex, "Failed to cache transaction {Id}", id);
             }
 
-            return transaction;
+            return mapped;
         }
 
-        public async Task<Transaction> CreateUpdateTransactionAsync(Transaction transaction)
+        public async Task<TransactionDTO> CreateUpdateTransactionAsync(Transaction transaction)
         {
             var userId = _userContext.GetUserId();
             transaction.UserId = userId;
-            Transaction saved;
 
+            Transaction saved;
             if (!string.IsNullOrEmpty(transaction.Id))
             {
                 var existing = await _transactionRepository.GetTransactionByIdAsync(transaction.Id);
@@ -148,7 +152,7 @@ namespace DonationsTracker.Core.Services
             _ = _invalidation.InvalidateKeyAsync($"{TransactionItemPrefix}{saved.Id}");
             _logger.LogInformation("Cache invalidated after transaction create/update {Id}", saved.Id);
 
-            return saved;
+            return saved.ToTransactionDTO();
         }
 
         public async Task<bool> DeleteTransactionAsync(string id)

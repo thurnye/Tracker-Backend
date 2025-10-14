@@ -1,3 +1,5 @@
+using DonationsTracker.Core.DTOs.Shared;
+
 namespace DonationsTracker.Core.DTOs
 {
     public class BudgetDTO
@@ -19,24 +21,8 @@ namespace DonationsTracker.Core.DTOs
         public bool IsActive { get; set; }
         public string PaymentMethod { get; set; }
 
-        // 🔗 Lightweight nested DTOs
-        public UserLiteDto? User { get; set; }
-        public CategoryLiteDto? Category { get; set; }
-    }
-
-    public class UserLiteDto
-    {
-        public string Id { get; set; }
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-    }
-
-    public class CategoryLiteDto
-    {
-        public string Id { get; set; }
-        public string? Type { get; set; }
-        public string? Name { get; set; }
-        public string? Icon { get; set; }
-        public string? Color { get; set; }
+        
+        public UserLiteDTO? User { get; set; }
+        public CategoryLiteDTO? Category { get; set; }
     }
 }

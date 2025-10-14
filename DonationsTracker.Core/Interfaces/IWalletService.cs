@@ -4,9 +4,9 @@ namespace DonationsTracker.Core.Interfaces
 {
     public interface IWalletService
     {
-        Task<IEnumerable<Wallet>> GetUserWalletsAsync();
-        Task<Wallet?> GetWalletAsync(string id);
-        Task<Wallet> CreateUpdateWalletAsync(Wallet wallet);
+        Task<IEnumerable<WalletDTO>> GetUserWalletsAsync();
+        Task<WalletDTO?> GetWalletAsync(string id);
+        Task<WalletDTO> CreateUpdateWalletAsync(Wallet wallet);
         Task<bool> DeleteWalletAsync(string id);
     }
 }
