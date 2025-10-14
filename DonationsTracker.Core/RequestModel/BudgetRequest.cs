@@ -1,12 +1,15 @@
-namespace DonationsTracker.Core.Models
+
+using DonationsTracker.DB;
+
+namespace DonationsTracker.Core.Entity
 {
-    public class Budget
+    public class BudgetRequest
     {
         public string Id { get; set; }
-        public int UserId { get; set; }
+        public string BudgetName { get; set; }
+        public string? CategoryId { get; set; } 
         public string SpendingType { get; set; } = null!;  // e.g. "Monthly", "Weekly"
         public decimal BudgetAmount { get; set; }
-        public string Category { get; set; } = null!;
         public DateTime Date { get; set; }
         public string? PaymentMethod { get; set; }
         public string? Frequency { get; set; }
@@ -18,11 +21,6 @@ namespace DonationsTracker.Core.Models
         public DateTime? EndDate { get; set; }
         public string? Status { get; set; }
         public decimal? AmountSpent { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        // Navigation
-        public User User { get; set; } = null!;
 
     }
 }

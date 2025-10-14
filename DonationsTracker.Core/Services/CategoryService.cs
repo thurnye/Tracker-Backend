@@ -109,39 +109,55 @@ namespace DonationsTracker.Core.Services
             return category;
         }
 
-        public async Task<Category> CreateUpdateCategoryAsync(Category category)
+        public async Task<Category> CreateUpdateCategoryAsync(CategoryRequest categoryRequest)
         {
             var userId = _userContext.GetUserId();
-            category.UserId = userId;
             Category saved;
 
-            if (!string.IsNullOrEmpty(category.Id))
+            if (!string.IsNullOrEmpty(categoryRequest.Id))
             {
-                var existing = await _categoryRepository.GetCategoryByIdAsync(category.Id);
+                // Update existing category
+                var existing = await _categoryRepository.GetCategoryByIdAsync(categoryRequest.Id);
                 if (existing == null)
                     throw new KeyNotFoundException("Category not found.");
 
-                existing.Name = category.Name;
-                existing.Icon = category.Icon;
-                existing.Color = category.Color;
-                existing.Type = category.Type;
+                if (existing.UserId != userId)
+                    throw new UnauthorizedAccessException("You cannot modify another user’s category.");
+
+                existing.Name = categoryRequest.Name;
+                existing.Icon = categoryRequest.Icon;
+                existing.Color = categoryRequest.Color;
+                existing.Type = categoryRequest.Type;
                 existing.UpdatedAt = DateTime.UtcNow;
 
                 saved = await _categoryRepository.UpdateCategoryAsync(existing);
             }
             else
             {
-                category.Id = Guid.NewGuid().ToString();
-                category.CreatedAt = DateTime.UtcNow;
-                saved = await _categoryRepository.CreateCategoryAsync(category);
+                // Create new category
+                var newCategory = new Category
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = categoryRequest.Name,
+                    Icon = categoryRequest.Icon,
+                    Color = categoryRequest.Color,
+                    Type = categoryRequest.Type,
+                    UserId = userId,
+                    CreatedAt = DateTime.UtcNow,
+                    IsActive = true
+                };
+
+                saved = await _categoryRepository.CreateCategoryAsync(newCategory);
             }
 
+            // 🔁 Cache invalidation
             _ = _invalidation.InvalidateByPrefixAsync(CategoryListPrefix);
             _ = _invalidation.InvalidateKeyAsync($"{CategoryItemPrefix}{saved.Id}");
-            _logger.LogInformation(" Cache invalidated for category {Id}", saved.Id);
+            _logger.LogInformation("🧹 Cache invalidated for category {Id}", saved.Id);
 
             return saved;
         }
+
 
         public async Task<bool> DeleteCategoryAsync(string id)
         {

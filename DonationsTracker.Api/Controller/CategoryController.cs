@@ -72,7 +72,7 @@ namespace DonationsTracker.Api.Controllers
         }
 
         [HttpPost("create-update")]
-        public async Task<IActionResult> CreateUpdateCategory([FromBody] Category category)
+        public async Task<IActionResult> CreateUpdateCategory([FromBody] CategoryRequest category)
         {
             var result = await _categoryService.CreateUpdateCategoryAsync(category);
 

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DonationsTracker.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7247245110e949aef82237e6e893def05546632d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+091cd76f9ba9f4f0eb5fe5e49b1b3507c5a2bd4d")]
 [assembly: System.Reflection.AssemblyProductAttribute("DonationsTracker.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DonationsTracker.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

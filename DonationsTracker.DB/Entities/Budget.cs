@@ -6,6 +6,7 @@ namespace DonationsTracker.Core.Entity
     public class Budget
     {
         public string Id { get; set; }
+        public string BudgetName { get; set; }
         public string UserId { get; set; }
         public string? CategoryId { get; set; } 
         public string SpendingType { get; set; } = null!;  // e.g. "Monthly", "Weekly"
@@ -25,9 +26,10 @@ namespace DonationsTracker.Core.Entity
          public DateTime? UpdatedAt { get; set; }
         public DateTime? CreatedAt { get; set; }
 
+
         // Navigation
         public ApplicationUser User { get; set; } = null!;
-        public Category? Category { get; set; }
+        public Category? Category { get; set; } 
 
     }
 }

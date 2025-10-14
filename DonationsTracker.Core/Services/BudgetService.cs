@@ -1,6 +1,4 @@
-using System.Text;
 using System.Text.Json;
-using System.IO.Compression;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using DonationsTracker.Core.Entity;
@@ -8,6 +6,7 @@ using DonationsTracker.Core.Interfaces;
 using DonationsTracker.Core.Interfaces.Repositories;
 using DonationsTracker.Core.Helpers;
 using DonationsTracker.Core.Cache;
+using DonationsTracker.Core.DTOs;
 
 namespace DonationsTracker.Core.Services
 {
@@ -36,18 +35,18 @@ namespace DonationsTracker.Core.Services
             _invalidation = invalidation;
         }
 
-        public async Task<IEnumerable<Budget>> GetUserBudgetsAsync()
+        public async Task<IEnumerable<BudgetDTO>> GetUserBudgetsAsync()
         {
             var userId = _userContext.GetUserId();
             string cacheKey = $"{BudgetListPrefix}:{userId}";
 
             try
             {
-                var cached = _cache.GetString(cacheKey);
+                var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
                     _logger.LogInformation("Cache hit for {CacheKey}", cacheKey);
-                    return JsonSerializer.Deserialize<IEnumerable<Budget>>(cached)!;
+                    return JsonSerializer.Deserialize<IEnumerable<BudgetDTO>>(cached)!;
                 }
             }
             catch (Exception ex)
@@ -56,15 +55,15 @@ namespace DonationsTracker.Core.Services
             }
 
             var budgets = await _budgetRepository.GetBudgetsByUserAsync(userId);
+            var mapped = budgets.Select(MapToDto).ToList();
 
             try
             {
-                var json = JsonSerializer.Serialize(budgets);
-                var options = new DistributedCacheEntryOptions
+                var json = JsonSerializer.Serialize(mapped);
+                await _cache.SetStringAsync(cacheKey, json, new DistributedCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
-                };
-                await _cache.SetStringAsync(cacheKey, json, options);
+                });
                 _logger.LogInformation("Cached budgets for {UserId}", userId);
             }
             catch (Exception ex)
@@ -72,20 +71,20 @@ namespace DonationsTracker.Core.Services
                 _logger.LogWarning(ex, "Failed to cache budgets for user {UserId}", userId);
             }
 
-            return budgets;
+            return mapped;
         }
 
-        public async Task<Budget?> GetBudgetAsync(string id)
+        public async Task<BudgetDTO?> GetBudgetAsync(string id)
         {
             string cacheKey = $"{BudgetItemPrefix}{id}";
 
             try
             {
-                var cached = _cache.GetString(cacheKey);
+                var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
                     _logger.LogInformation("Cache hit for budget {Id}", id);
-                    return JsonSerializer.Deserialize<Budget>(cached);
+                    return JsonSerializer.Deserialize<BudgetDTO>(cached);
                 }
             }
             catch (Exception ex)
@@ -97,12 +96,17 @@ namespace DonationsTracker.Core.Services
             if (budget == null)
                 throw new KeyNotFoundException($"Budget with ID {id} not found.");
 
+            var mapped = MapToDto(budget);
+
             try
             {
                 await _cache.SetStringAsync(
                     cacheKey,
-                    JsonSerializer.Serialize(budget),
-                    new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) }
+                    JsonSerializer.Serialize(mapped),
+                    new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+                    }
                 );
                 _logger.LogInformation("Cached budget {Id}", id);
             }
@@ -111,13 +115,12 @@ namespace DonationsTracker.Core.Services
                 _logger.LogWarning(ex, "Failed to cache budget {Id}", id);
             }
 
-            return budget;
+            return mapped;
         }
 
-        public async Task<Budget> CreateUpdateBudgetAsync(Budget budget)
+        public async Task<BudgetDTO> CreateUpdateBudgetAsync(BudgetRequest budget)
         {
             var userId = _userContext.GetUserId();
-            budget.UserId = userId;
 
             Budget saved;
             if (!string.IsNullOrEmpty(budget.Id))
@@ -129,6 +132,7 @@ namespace DonationsTracker.Core.Services
                 if (existing.UserId != userId)
                     throw new UnauthorizedAccessException("You cannot modify another user’s budget.");
 
+                existing.BudgetName = budget.BudgetName;
                 existing.BudgetAmount = budget.BudgetAmount;
                 existing.CategoryId = budget.CategoryId;
                 existing.Currency = budget.Currency;
@@ -145,9 +149,30 @@ namespace DonationsTracker.Core.Services
             }
             else
             {
-                budget.CreatedAt = DateTime.UtcNow;
-                budget.IsActive = true;
-                saved = await _budgetRepository.CreateBudgetAsync(budget);
+                var newBudget = new Budget
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserId = userId,
+                    CategoryId = budget.CategoryId,
+                    SpendingType = budget.SpendingType,
+                    BudgetAmount = budget.BudgetAmount,
+                    BudgetName = budget.BudgetName,
+                    Date = budget.Date,
+                    PaymentMethod = budget.PaymentMethod,
+                    Frequency = budget.Frequency,
+                    Notes = budget.Notes,
+                    BudgetType = budget.BudgetType,
+                    IncomeSource = budget.IncomeSource,
+                    Currency = budget.Currency,
+                    StartDate = budget.StartDate,
+                    EndDate = budget.EndDate,
+                    Status = budget.Status,
+                    AmountSpent = budget.AmountSpent,
+                    CreatedAt = DateTime.UtcNow,
+                    IsActive = true
+                };
+
+                saved = await _budgetRepository.CreateBudgetAsync(newBudget);
             }
 
             // Invalidate cache
@@ -155,7 +180,7 @@ namespace DonationsTracker.Core.Services
             _ = _invalidation.InvalidateKeyAsync($"{BudgetItemPrefix}{saved.Id}");
             _logger.LogInformation("Cache invalidated after budget create/update for user {UserId}", userId);
 
-            return saved;
+            return MapToDto(saved);
         }
 
         public async Task<bool> DeleteBudgetAsync(string id)
@@ -169,5 +194,50 @@ namespace DonationsTracker.Core.Services
             }
             return deleted;
         }
+
+
+        private static BudgetDTO MapToDto(Budget b)
+        {
+            return new BudgetDTO
+            {
+                Id = b.Id,
+                BudgetName = b.BudgetName,
+                BudgetAmount = b.BudgetAmount,
+                SpendingType = b.SpendingType,
+                Currency = b.Currency,
+                Status = b.Status,
+                Date = b.Date,
+                StartDate = b.StartDate,
+                EndDate = b.EndDate,
+                Frequency = b.Frequency,
+                Notes = b.Notes,
+                BudgetType = b.BudgetType,
+                IncomeSource = b.IncomeSource,
+                AmountSpent = b.AmountSpent,
+                IsActive = b.IsActive,
+
+                // Include simplified user and category
+                User = b.User != null
+                    ? new UserLiteDto
+                    {
+                        Id = b.User.Id,
+                        FirstName = b.User.FirstName,
+                        LastName = b.User.LastName
+                    }
+                    : null,
+
+                Category = b.Category != null
+                    ? new CategoryLiteDto
+                    {
+                        Id = b.Category.Id,
+                        Type = b.Category.Type,
+                        Name = b.Category.Name,
+                        Icon = b.Category.Icon,
+                        Color = b.Category.Color
+                    }
+                    : null
+            };
+        }
+
     }
 }

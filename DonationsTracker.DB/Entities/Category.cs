@@ -5,8 +5,8 @@ namespace DonationsTracker.Core.Entity
 {
     public class Category
     {
-        public string Id { get; set; }
-        public string UserId { get; set; }
+        public string? Id { get; set; }
+        public string? UserId { get; set; }
 
         /// <summary>
         /// Either "Income" or "Expense"
@@ -25,7 +25,7 @@ namespace DonationsTracker.Core.Entity
         // Navigation
         public ApplicationUser User { get; set; } = null!;
         public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
-        public ICollection<Budget> Budgets { get; set; } = new List<Budget>();
+       public ICollection<Budget> Budgets { get; set; } = new List<Budget>();
         public ICollection<Goal> Goals { get; set; } = new List<Goal>();
 
     }
