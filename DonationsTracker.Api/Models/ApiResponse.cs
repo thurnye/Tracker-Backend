@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DonationsTracker.Core.RequestModel;
 
 namespace DonationsTracker.Api.Models
 {
@@ -17,13 +18,6 @@ namespace DonationsTracker.Api.Models
         public PaginationMeta? Pagination { get; set; }
     }
 
-    public class PaginationMeta
-    {
-        public int Page { get; set; }
-        public int Limit { get; set; }
-        public int Total { get; set; }
-        public int TotalPages { get; set; }
-    }
 
     public class ApiError
     {

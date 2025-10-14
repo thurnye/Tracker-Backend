@@ -7,8 +7,8 @@ using DonationsTracker.Core.Interfaces.Repositories;
 using DonationsTracker.Core.Helpers;
 using DonationsTracker.Core.Cache;
 using DonationsTracker.Core.DTOs;
-using DonationsTracker.Core.DTOs.Shared;
 using DonationsTracker.Core.RequestModel;
+using Microsoft.Extensions.Configuration;
 
 namespace DonationsTracker.Core.Services
 {
@@ -19,6 +19,7 @@ namespace DonationsTracker.Core.Services
         private readonly IDistributedCache _cache;
         private readonly ILogger<BudgetService> _logger;
         private readonly CacheInvalidationService _invalidation;
+        private readonly TimeSpan _defaultTtl;
 
         private const string BudgetListPrefix = "budgets:list";
         private const string BudgetItemPrefix = "budgets:item:";
@@ -28,32 +29,34 @@ namespace DonationsTracker.Core.Services
             IUserContextService userContext,
             IDistributedCache cache,
             ILogger<BudgetService> logger,
-            CacheInvalidationService invalidation)
+            CacheInvalidationService invalidation,
+            IConfiguration config)
         {
             _budgetRepository = budgetRepository;
             _userContext = userContext;
             _cache = cache;
             _logger = logger;
             _invalidation = invalidation;
+            
         }
 
         public async Task<IEnumerable<BudgetDTO>> GetUserBudgetsAsync()
         {
             var userId = _userContext.GetUserId();
-            string cacheKey = $"{BudgetListPrefix}:{userId}";
+            var cacheKey = $"{BudgetListPrefix}:{userId}";
 
             try
             {
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation("Cache hit for {CacheKey}", cacheKey);
+                    _logger.LogInformation("✅ Cache hit for {CacheKey}", cacheKey);
                     return JsonSerializer.Deserialize<IEnumerable<BudgetDTO>>(cached)!;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Redis read failed, falling back to DB for user {UserId}", userId);
+                _logger.LogWarning(ex, "⚠️ Redis read failed for user {UserId}", userId);
             }
 
             var budgets = await _budgetRepository.GetBudgetsByUserAsync(userId);
@@ -62,15 +65,15 @@ namespace DonationsTracker.Core.Services
             try
             {
                 var json = JsonSerializer.Serialize(mapped);
-                await _cache.SetStringAsync(cacheKey, json, new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
-                });
-                _logger.LogInformation("Cached budgets for {UserId}", userId);
+                await _cache.SetStringAsync(cacheKey, json,
+                    new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _defaultTtl });
+
+                await _invalidation.TrackKeyAsync(BudgetListPrefix, cacheKey);
+                _logger.LogInformation("💾 Cached budgets for {UserId}", userId);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to cache budgets for user {UserId}", userId);
+                _logger.LogWarning(ex, "Failed to cache budgets for {UserId}", userId);
             }
 
             return mapped;
@@ -78,20 +81,20 @@ namespace DonationsTracker.Core.Services
 
         public async Task<BudgetDTO?> GetBudgetAsync(string id)
         {
-            string cacheKey = $"{BudgetItemPrefix}{id}";
+            var cacheKey = $"{BudgetItemPrefix}{id}";
 
             try
             {
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation("Cache hit for budget {Id}", id);
+                    _logger.LogInformation("✅ Cache hit for budget {Id}", id);
                     return JsonSerializer.Deserialize<BudgetDTO>(cached);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Redis read failed for budget {Id}", id);
+                _logger.LogWarning(ex, "⚠️ Redis read failed for budget {Id}", id);
             }
 
             var budget = await _budgetRepository.GetBudgetByIdAsync(id);
@@ -105,12 +108,10 @@ namespace DonationsTracker.Core.Services
                 await _cache.SetStringAsync(
                     cacheKey,
                     JsonSerializer.Serialize(mapped),
-                    new DistributedCacheEntryOptions
-                    {
-                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-                    }
+                    new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _defaultTtl }
                 );
-                _logger.LogInformation("Cached budget {Id}", id);
+                await _invalidation.TrackKeyAsync(BudgetItemPrefix, cacheKey);
+                _logger.LogInformation("💾 Cached budget {Id}", id);
             }
             catch (Exception ex)
             {
@@ -123,8 +124,8 @@ namespace DonationsTracker.Core.Services
         public async Task<BudgetDTO> CreateUpdateBudgetAsync(BudgetRequest budget)
         {
             var userId = _userContext.GetUserId();
-
             Budget saved;
+
             if (!string.IsNullOrEmpty(budget.Id))
             {
                 var existing = await _budgetRepository.GetBudgetByIdAsync(budget.Id);
@@ -177,10 +178,10 @@ namespace DonationsTracker.Core.Services
                 saved = await _budgetRepository.CreateBudgetAsync(newBudget);
             }
 
-            // Invalidate cache
-            _ = _invalidation.InvalidateByPrefixAsync(BudgetListPrefix);
-            _ = _invalidation.InvalidateKeyAsync($"{BudgetItemPrefix}{saved.Id}");
-            _logger.LogInformation("Cache invalidated after budget create/update for user {UserId}", userId);
+            // Await invalidations to clear immediately
+            await _invalidation.InvalidateKeyAsync($"{BudgetItemPrefix}{saved.Id}");
+            await _invalidation.InvalidateByPrefixAsync(BudgetListPrefix);
+            _logger.LogInformation("🧹 Cache invalidated after budget create/update for {UserId}", userId);
 
             return saved.ToBudgetDTO();
         }
@@ -190,9 +191,9 @@ namespace DonationsTracker.Core.Services
             var deleted = await _budgetRepository.DeleteBudgetAsync(id);
             if (deleted)
             {
-                _ = _invalidation.InvalidateKeyAsync($"{BudgetItemPrefix}{id}");
-                _ = _invalidation.InvalidateByPrefixAsync(BudgetListPrefix);
-                _logger.LogInformation("Cache invalidated after delete of budget {Id}", id);
+                await _invalidation.InvalidateKeyAsync($"{BudgetItemPrefix}{id}");
+                await _invalidation.InvalidateByPrefixAsync(BudgetListPrefix);
+                _logger.LogInformation("🧹 Cache invalidated after deleting budget {Id}", id);
             }
             return deleted;
         }

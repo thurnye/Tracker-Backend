@@ -1,12 +1,14 @@
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using DonationsTracker.Core.Entity;
 using DonationsTracker.Core.Interfaces;
 using DonationsTracker.Core.Interfaces.Repositories;
-using DonationsTracker.Core.Helpers;
 using DonationsTracker.Core.Cache;
+using DonationsTracker.Core.DTOs;
 using DonationsTracker.Core.RequestModel;
+using DonationsTracker.Core.Helpers;
 
 namespace DonationsTracker.Core.Services
 {
@@ -17,6 +19,7 @@ namespace DonationsTracker.Core.Services
         private readonly IDistributedCache _cache;
         private readonly ILogger<WalletService> _logger;
         private readonly CacheInvalidationService _invalidation;
+        private readonly TimeSpan _defaultTtl;
 
         private const string WalletListPrefix = "wallets:list";
         private const string WalletItemPrefix = "wallets:item:";
@@ -26,7 +29,8 @@ namespace DonationsTracker.Core.Services
             IUserContextService userContext,
             IDistributedCache cache,
             ILogger<WalletService> logger,
-            CacheInvalidationService invalidation)
+            CacheInvalidationService invalidation,
+            IConfiguration config)
         {
             _walletRepository = walletRepository;
             _userContext = userContext;
@@ -35,7 +39,6 @@ namespace DonationsTracker.Core.Services
             _invalidation = invalidation;
         }
 
-        // Get all wallets for the logged-in user
         public async Task<IEnumerable<WalletDTO>> GetUserWalletsAsync()
         {
             var userId = _userContext.GetUserId();
@@ -46,13 +49,13 @@ namespace DonationsTracker.Core.Services
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation("Cache hit for wallets of user {UserId}", userId);
+                    _logger.LogInformation("✅ Cache hit for wallets {UserId}", userId);
                     return JsonSerializer.Deserialize<IEnumerable<WalletDTO>>(cached)!;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Redis read failed for wallets of user {UserId}", userId);
+                _logger.LogWarning(ex, "Redis read failed for wallets {UserId}", userId);
             }
 
             var wallets = await _walletRepository.GetWalletsByUserAsync(userId);
@@ -60,22 +63,19 @@ namespace DonationsTracker.Core.Services
 
             try
             {
-                await _cache.SetStringAsync(
-                    cacheKey,
-                    JsonSerializer.Serialize(mapped),
-                    new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) }
-                );
-                _logger.LogInformation("Cached wallets for user {UserId}", userId);
+                await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(mapped),
+                    new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _defaultTtl });
+                await _invalidation.TrackKeyAsync(WalletListPrefix, cacheKey);
+                _logger.LogInformation("💾 Cached wallets for {UserId}", userId);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to cache wallets for user {UserId}", userId);
+                _logger.LogWarning(ex, "Failed to cache wallets for {UserId}", userId);
             }
 
             return mapped;
         }
 
-        // Get a single wallet by ID
         public async Task<WalletDTO?> GetWalletAsync(string id)
         {
             var cacheKey = $"{WalletItemPrefix}{id}";
@@ -85,7 +85,7 @@ namespace DonationsTracker.Core.Services
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation("Cache hit for wallet {Id}", id);
+                    _logger.LogInformation("✅ Cache hit for wallet {Id}", id);
                     return JsonSerializer.Deserialize<WalletDTO>(cached);
                 }
             }
@@ -102,12 +102,10 @@ namespace DonationsTracker.Core.Services
 
             try
             {
-                await _cache.SetStringAsync(
-                    cacheKey,
-                    JsonSerializer.Serialize(mapped),
-                    new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) }
-                );
-                _logger.LogInformation("Cached wallet {Id}", id);
+                await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(mapped),
+                    new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _defaultTtl });
+                await _invalidation.TrackKeyAsync(WalletItemPrefix, cacheKey);
+                _logger.LogInformation("💾 Cached wallet {Id}", id);
             }
             catch (Exception ex)
             {
@@ -117,22 +115,16 @@ namespace DonationsTracker.Core.Services
             return mapped;
         }
 
-        // Create or update wallet
         public async Task<WalletDTO> CreateUpdateWalletAsync(WalletRequest wallet)
         {
             var userId = _userContext.GetUserId();
-            
-
             Wallet saved;
 
             if (!string.IsNullOrEmpty(wallet.Id))
             {
                 var existing = await _walletRepository.GetWalletByIdAsync(wallet.Id);
-                if (existing == null)
-                    throw new KeyNotFoundException("Wallet not found.");
-
-                if (existing.UserId != userId)
-                    throw new UnauthorizedAccessException("You cannot modify another user’s wallet.");
+                if (existing == null) throw new KeyNotFoundException("Wallet not found.");
+                if (existing.UserId != userId) throw new UnauthorizedAccessException();
 
                 existing.WalletName = wallet.WalletName;
                 existing.WalletType = wallet.WalletType;
@@ -179,22 +171,20 @@ namespace DonationsTracker.Core.Services
                 saved = await _walletRepository.CreateWalletAsync(newWallet);
             }
 
-            // Invalidate cache for wallets
-            _ = _invalidation.InvalidateByPrefixAsync(WalletListPrefix);
-            _ = _invalidation.InvalidateKeyAsync($"{WalletItemPrefix}{saved.Id}");
-            _logger.LogInformation("Cache invalidated after wallet create/update {Id}", saved.Id);
+            await _invalidation.InvalidateKeyAsync($"{WalletItemPrefix}{saved.Id}");
+            await _invalidation.InvalidateByPrefixAsync(WalletListPrefix);
+            _logger.LogInformation("🧹 Cache invalidated after wallet create/update {Id}", saved.Id);
 
             return saved.ToWalletDTO();
         }
 
-        // Delete wallet
         public async Task<bool> DeleteWalletAsync(string id)
         {
             var deleted = await _walletRepository.DeleteWalletAsync(id);
             if (deleted)
             {
-                _ = _invalidation.InvalidateKeyAsync($"{WalletItemPrefix}{id}");
-                _ = _invalidation.InvalidateByPrefixAsync(WalletListPrefix);
+                await _invalidation.InvalidateKeyAsync($"{WalletItemPrefix}{id}");
+                await _invalidation.InvalidateByPrefixAsync(WalletListPrefix);
                 _logger.LogInformation("🧹 Cache invalidated after deleting wallet {Id}", id);
             }
             return deleted;

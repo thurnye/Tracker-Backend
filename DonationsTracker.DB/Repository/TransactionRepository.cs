@@ -13,15 +13,19 @@ namespace DonationsTracker.DB.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Transaction>> GetTransactionsByUserAsync(string userId)
+        public async Task<(IEnumerable<Transaction> Transactions, int TotalCount)> GetTransactionsByUserAsync(string userId, int page, int limit)
         {
-            return await _context.Transactions
+            var query = _context.Transactions
                 .Include(t => t.Category)
                 .Include(t => t.Wallet)
                 .Where(t => t.UserId == userId && t.IsActive)
-                .ToListAsync();
-        }
+                .OrderByDescending(t => t.TransactionDate);
 
+            var totalCount = await query.CountAsync();
+            var transactions = await query.Skip((page - 1) * limit).Take(limit).ToListAsync();
+
+            return (transactions, totalCount);
+        }
         public async Task<Transaction?> GetTransactionByIdAsync(string id)
         {
             return await _context.Transactions
@@ -54,5 +58,29 @@ namespace DonationsTracker.DB.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+
+        /// <summary>
+        /// Get Transactions By Wallet Id Paginated
+        /// </summary>
+        /// <param name="walletId"></param>
+        /// <param name="userId"></param>
+        /// <param name="page"></param>
+        /// <param name="limit"></param>
+        /// <returns></returns>
+        public async Task<(IEnumerable<Transaction> Transactions, int TotalCount)> GetTransactionsByWalletIdAsync(string walletId, string userId, int page, int limit)
+        {
+            var query = _context.Transactions
+                .Include(t => t.Category)
+                .Include(t => t.Wallet)
+                .Where(t => t.WalletId == walletId && t.UserId == userId && t.IsActive)
+                .OrderByDescending(t => t.TransactionDate);
+
+            var totalCount = await query.CountAsync();
+            var transactions = await query.Skip((page - 1) * limit).Take(limit).ToListAsync();
+
+            return (transactions, totalCount);
+        }
+
     }
 }

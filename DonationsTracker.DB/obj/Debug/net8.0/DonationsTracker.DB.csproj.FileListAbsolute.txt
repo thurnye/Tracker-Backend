@@ -27,3 +27,4 @@
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.DB/obj/Debug/net8.0/DonationsTracker.DB.genruntimeconfig.cache
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.DB/obj/Debug/net8.0/ref/DonationsTracker.DB.dll
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.DB/obj/Debug/net8.0/DonationsTracker.DB.sourcelink.json
+/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.DB/bin/Debug/net8.0/Seed/transactions.json

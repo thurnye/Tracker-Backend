@@ -7,8 +7,10 @@ namespace DonationsTracker.DB.Seed
     {
         public static async Task SeedAsync(DonationDbContext context, UserManager<ApplicationUser> userManager)
         {
-            var user = await UserSeeder.SeedDefaultUserAsync(userManager);
-            await CategorySeeder.SeedDefaultCategoriesAsync(context, user.Id);
+            // var user = await UserSeeder.SeedDefaultUserAsync(userManager);
+            // await CategorySeeder.SeedDefaultCategoriesAsync(context, user.Id);
+            // Seed transactions 
+            await TransactionSeeder.SeedTransactionsAsync(context);
         }
     }
 }

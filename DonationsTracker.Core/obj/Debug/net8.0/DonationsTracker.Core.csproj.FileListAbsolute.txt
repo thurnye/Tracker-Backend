@@ -29,3 +29,4 @@
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Core/obj/Debug/net8.0/DonationsTracker.Core.pdb
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Core/obj/Debug/net8.0/ref/DonationsTracker.Core.dll
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Core/obj/Debug/net8.0/DonationsTracker.Core.sourcelink.json
+/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Core/bin/Debug/net8.0/Seed/transactions.json

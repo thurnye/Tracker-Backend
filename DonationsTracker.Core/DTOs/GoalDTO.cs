@@ -19,10 +19,11 @@ namespace DonationsTracker.Core.Entity
         public decimal? TargetValue { get; set; }
         public DateTime? TargetDate { get; set; }
         public string? SuccessCriteria { get; set; }
-        public string? Actions { get; set; }
-        public string? ResourcesNeeded { get; set; }
+        public List<string>? Actions { get; set; }
+        public List<string>? ResourcesNeeded { get; set; }
+        public List<string>? Milestones { get; set; } 
+
         public string? Obstacles { get; set; }
-        public string? Milestones { get; set; }
 
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

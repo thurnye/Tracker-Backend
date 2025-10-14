@@ -6,6 +6,7 @@ using DonationsTracker.Core;
 using DonationsTracker.Core.Security;
 using DonationsTracker.DB;
 using DonationsTracker.Api.Helpers;
+using DonationsTracker.Core.RequestModel;
 
 namespace DonationsTracker.Api.Controllers
 {

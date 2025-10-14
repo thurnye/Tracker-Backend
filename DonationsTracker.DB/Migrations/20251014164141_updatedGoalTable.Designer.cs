@@ -4,6 +4,7 @@ using DonationsTracker.DB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DonationsTracker.DB.Migrations
 {
     [DbContext(typeof(DonationDbContext))]
-    partial class DonationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251014164141_updatedGoalTable")]
+    partial class updatedGoalTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -260,7 +263,7 @@ namespace DonationsTracker.DB.Migrations
 
                     b.Property<string>("Reference")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(MAX)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Status")
                         .HasMaxLength(50)

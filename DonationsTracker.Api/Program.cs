@@ -164,6 +164,7 @@ builder.Services.AddCors(options =>
 // --------------------------------------------------------------------
 // Dependency Injection
 // --------------------------------------------------------------------
+// Repositories
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IDonationRepository, DonationRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
@@ -174,19 +175,22 @@ builder.Services.AddScoped<IWalletRepository, WalletRepository>();
 builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IDonationService, DonationServices>();
+// Core Services
 builder.Services.AddScoped<BotDetectionService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<CacheInvalidationService>();
-builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
 
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddFluentValidationClientsideAdapters();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 
-builder.Services.AddScoped<IUserContextService, UserContextService>();
+// Validation
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
+
+// Application Services
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IDonationService, DonationServices>();
 builder.Services.AddScoped<IGoalService, GoalService>();
 builder.Services.AddScoped<IBudgetService, BudgetService>();
 builder.Services.AddScoped<IWalletService, WalletService>();
@@ -200,7 +204,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 var app = builder.Build();
 
 // --------------------------------------------------------------------
-// Auto-migrate / create database if not exists (this fixes your issue)
+// Auto-migrate / create database if not exists 
 // --------------------------------------------------------------------
 using (var scope = app.Services.CreateScope())
 {
@@ -238,13 +242,13 @@ app.UseMiddleware<ErrorHandlingMiddleware>();
 app.MapControllers();
 
 // populate db with seed data
-// using (var scope = app.Services.CreateScope())
-// {
-//     var services = scope.ServiceProvider;
-//     var context = services.GetRequiredService<DonationDbContext>();
-//     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-//     await DataSeeder.SeedAsync(context, userManager);
-// }
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<DonationDbContext>();
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+    await DataSeeder.SeedAsync(context, userManager);
+}
 
 app.Run();
 

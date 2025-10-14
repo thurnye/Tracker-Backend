@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.IO.Compression;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using DonationsTracker.DB;
 using DonationsTracker.DB.Repositories;
 using DonationsTracker.Core.Cache;
@@ -15,6 +16,7 @@ namespace DonationsTracker.Core
         private readonly IDistributedCache _cache;
         private readonly ILogger<DonationServices> _logger;
         private readonly CacheInvalidationService _invalidation;
+        private readonly TimeSpan _defaultTtl;
 
         private const string DonationListPrefix = "donations:list";
         private const string DonationItemPrefix = "donations:item:";
@@ -23,7 +25,8 @@ namespace DonationsTracker.Core
             IDonationRepository repo,
             IDistributedCache cache,
             ILogger<DonationServices> logger,
-            CacheInvalidationService invalidation)
+            CacheInvalidationService invalidation,
+            IConfiguration config)
         {
             _repo = repo;
             _cache = cache;
@@ -46,10 +49,9 @@ namespace DonationsTracker.Core
                     var json = reader.ReadToEnd();
 
                     var cachedResult = JsonSerializer.Deserialize<(List<Donation> Items, int TotalCount)>(json);
-
                     if (cachedResult.Items != null)
                     {
-                        _logger.LogInformation("Cache hit for key: {CacheKey}", cacheKey);
+                        _logger.LogInformation("✅ Cache hit for key: {CacheKey}", cacheKey);
                         return cachedResult;
                     }
                 }
@@ -61,10 +63,8 @@ namespace DonationsTracker.Core
                 _logger.LogWarning(ex, "Redis read failed, falling back to DB.");
             }
 
-            // Fallback to DB
             var (items, totalCount) = _repo.GetAll(page, limit);
 
-            // Cache the result
             try
             {
                 var result = (items, totalCount);
@@ -81,11 +81,12 @@ namespace DonationsTracker.Core
 
                 var cacheOptions = new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow = _defaultTtl
                 };
 
                 _cache.Set(cacheKey, compressed, cacheOptions);
-                _logger.LogInformation("Cached result for key: {CacheKey}", cacheKey);
+                _invalidation.TrackKeyAsync(DonationListPrefix, cacheKey).GetAwaiter().GetResult();
+                _logger.LogInformation("💾 Cached result for key: {CacheKey}", cacheKey);
             }
             catch (Exception ex)
             {
@@ -104,7 +105,7 @@ namespace DonationsTracker.Core
                 var cachedDonation = _cache.GetString(cacheKey);
                 if (!string.IsNullOrEmpty(cachedDonation))
                 {
-                    _logger.LogInformation("Cache hit for donation ID: {Id}", id);
+                    _logger.LogInformation("✅ Cache hit for donation ID: {Id}", id);
                     return JsonSerializer.Deserialize<Donation>(cachedDonation)!;
                 }
             }
@@ -121,10 +122,11 @@ namespace DonationsTracker.Core
             {
                 var cacheOptions = new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+                    AbsoluteExpirationRelativeToNow = _defaultTtl
                 };
 
                 _cache.SetString(cacheKey, JsonSerializer.Serialize(donation), cacheOptions);
+                _invalidation.TrackKeyAsync(DonationItemPrefix, cacheKey).GetAwaiter().GetResult();
                 _logger.LogInformation("💾 Cached donation ID {Id}", id);
             }
             catch (Exception ex)
@@ -139,11 +141,10 @@ namespace DonationsTracker.Core
         {
             var saved = _repo.Save(donation);
 
-            // Use centralized invalidation
-            _ = _invalidation.InvalidateKeyAsync($"{DonationItemPrefix}{saved.Id}");
-            _ = _invalidation.InvalidateByPrefixAsync(DonationListPrefix);
+            _invalidation.InvalidateKeyAsync($"{DonationItemPrefix}{saved.Id}").GetAwaiter().GetResult();
+            _invalidation.InvalidateByPrefixAsync(DonationListPrefix).GetAwaiter().GetResult();
 
-            _logger.LogInformation("Cache invalidated after Create/Update for donation ID {Id}", saved.Id);
+            _logger.LogInformation("🧹 Cache invalidated after Create/Update for donation ID {Id}", saved.Id);
             return saved;
         }
 
@@ -151,9 +152,8 @@ namespace DonationsTracker.Core
         {
             _repo.Delete(id);
 
-            // Use centralized invalidation
-            _ = _invalidation.InvalidateKeyAsync($"{DonationItemPrefix}{id}");
-            _ = _invalidation.InvalidateByPrefixAsync(DonationListPrefix);
+            _invalidation.InvalidateKeyAsync($"{DonationItemPrefix}{id}").GetAwaiter().GetResult();
+            _invalidation.InvalidateByPrefixAsync(DonationListPrefix).GetAwaiter().GetResult();
 
             _logger.LogInformation("🧹 Cache invalidated after Delete for donation ID {Id}", id);
         }

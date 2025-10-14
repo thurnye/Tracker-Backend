@@ -1,12 +1,13 @@
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using DonationsTracker.Core.Entity;
 using DonationsTracker.Core.Interfaces;
 using DonationsTracker.Core.Interfaces.Repositories;
-using DonationsTracker.Core.Helpers;
 using DonationsTracker.Core.Cache;
 using DonationsTracker.Core.RequestModel;
+using DonationsTracker.Core.Helpers;
 
 namespace DonationsTracker.Core.Services
 {
@@ -17,6 +18,7 @@ namespace DonationsTracker.Core.Services
         private readonly IDistributedCache _cache;
         private readonly ILogger<CategoryService> _logger;
         private readonly CacheInvalidationService _invalidation;
+        private readonly TimeSpan _defaultTtl;
 
         private const string CategoryListPrefix = "categories:list";
         private const string CategoryItemPrefix = "categories:item:";
@@ -26,7 +28,8 @@ namespace DonationsTracker.Core.Services
             IUserContextService userContext,
             IDistributedCache cache,
             ILogger<CategoryService> logger,
-            CacheInvalidationService invalidation)
+            CacheInvalidationService invalidation,
+            IConfiguration config)
         {
             _categoryRepository = categoryRepository;
             _userContext = userContext;
@@ -45,7 +48,7 @@ namespace DonationsTracker.Core.Services
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation(" Cache hit for categories {UserId}", userId);
+                    _logger.LogInformation("✅ Cache hit for categories {UserId}", userId);
                     return JsonSerializer.Deserialize<IEnumerable<Category>>(cached)!;
                 }
             }
@@ -58,11 +61,10 @@ namespace DonationsTracker.Core.Services
 
             try
             {
-                await _cache.SetStringAsync(
-                    cacheKey,
-                    JsonSerializer.Serialize(categories),
-                    new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) }
-                );
+                await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(categories),
+                    new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _defaultTtl });
+                await _invalidation.TrackKeyAsync(CategoryListPrefix, cacheKey);
+                _logger.LogInformation("💾 Cached categories for {UserId}", userId);
             }
             catch (Exception ex)
             {
@@ -81,7 +83,7 @@ namespace DonationsTracker.Core.Services
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation(" Cache hit for category {Id}", id);
+                    _logger.LogInformation("✅ Cache hit for category {Id}", id);
                     return JsonSerializer.Deserialize<Category>(cached);
                 }
             }
@@ -96,11 +98,10 @@ namespace DonationsTracker.Core.Services
 
             try
             {
-                await _cache.SetStringAsync(
-                    cacheKey,
-                    JsonSerializer.Serialize(category),
-                    new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) }
-                );
+                await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(category),
+                    new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _defaultTtl });
+                await _invalidation.TrackKeyAsync(CategoryItemPrefix, cacheKey);
+                _logger.LogInformation("💾 Cached category {Id}", id);
             }
             catch (Exception ex)
             {
@@ -117,13 +118,9 @@ namespace DonationsTracker.Core.Services
 
             if (!string.IsNullOrEmpty(categoryRequest.Id))
             {
-                // Update existing category
                 var existing = await _categoryRepository.GetCategoryByIdAsync(categoryRequest.Id);
-                if (existing == null)
-                    throw new KeyNotFoundException("Category not found.");
-
-                if (existing.UserId != userId)
-                    throw new UnauthorizedAccessException("You cannot modify another user’s category.");
+                if (existing == null) throw new KeyNotFoundException("Category not found.");
+                if (existing.UserId != userId) throw new UnauthorizedAccessException();
 
                 existing.Name = categoryRequest.Name;
                 existing.Icon = categoryRequest.Icon;
@@ -135,7 +132,6 @@ namespace DonationsTracker.Core.Services
             }
             else
             {
-                // Create new category
                 var newCategory = new Category
                 {
                     Id = Guid.NewGuid().ToString(),
@@ -151,22 +147,20 @@ namespace DonationsTracker.Core.Services
                 saved = await _categoryRepository.CreateCategoryAsync(newCategory);
             }
 
-            // 🔁 Cache invalidation
-            _ = _invalidation.InvalidateByPrefixAsync(CategoryListPrefix);
-            _ = _invalidation.InvalidateKeyAsync($"{CategoryItemPrefix}{saved.Id}");
+            await _invalidation.InvalidateKeyAsync($"{CategoryItemPrefix}{saved.Id}");
+            await _invalidation.InvalidateByPrefixAsync(CategoryListPrefix);
             _logger.LogInformation("🧹 Cache invalidated for category {Id}", saved.Id);
 
             return saved;
         }
-
 
         public async Task<bool> DeleteCategoryAsync(string id)
         {
             var deleted = await _categoryRepository.DeleteCategoryAsync(id);
             if (deleted)
             {
-                _ = _invalidation.InvalidateKeyAsync($"{CategoryItemPrefix}{id}");
-                _ = _invalidation.InvalidateByPrefixAsync(CategoryListPrefix);
+                await _invalidation.InvalidateKeyAsync($"{CategoryItemPrefix}{id}");
+                await _invalidation.InvalidateByPrefixAsync(CategoryListPrefix);
             }
             return deleted;
         }

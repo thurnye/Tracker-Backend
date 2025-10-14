@@ -19,7 +19,11 @@ namespace DonationsTracker.Api.Controllers
             _transactionService = transactionService;
         }
 
-        // Combined create + update
+        /// <summary>
+        /// Create or Update Transaction
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <returns></returns>
         [HttpPost("create-update")]
         public async Task<IActionResult> CreateUpdateTransaction([FromBody] TransactionRequest transaction)
         {
@@ -36,10 +40,14 @@ namespace DonationsTracker.Api.Controllers
             });
         }
 
+        /// <summary>
+        /// Get User Transactions
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> GetUserTransactions()
+        public async Task<IActionResult> GetUserTransactions([FromQuery] int page = 1, [FromQuery] int limit = 10)
         {
-            var transactions = await _transactionService.GetUserTransactionsAsync();
+            var (transactions, pagination) = await _transactionService.GetUserTransactionsAsync(page, limit);
 
             return Ok(new ApiResponse<List<TransactionDTO>>
             {
@@ -47,11 +55,18 @@ namespace DonationsTracker.Api.Controllers
                 Meta = new ApiMeta
                 {
                     RequestId = Guid.NewGuid().ToString(),
-                    Timestamp = DateTime.UtcNow
+                    Timestamp = DateTime.UtcNow,
+                    Pagination = pagination
                 }
             });
         }
 
+        
+        /// <summary>
+        /// Get Transaction By Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTransactionById(string id)
         {
@@ -89,6 +104,34 @@ namespace DonationsTracker.Api.Controllers
             });
         }
 
+
+        /// <summary>
+        /// Get Wallet Transactions
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("wallet/{walletId}")]
+        public async Task<IActionResult> GetTransactionsByWalletId(string walletId, [FromQuery] int page = 1, [FromQuery] int limit = 10)
+        {
+            var (transactions, pagination) = await _transactionService.GetTransactionsByWalletIdAsync(walletId, page, limit);
+
+            return Ok(new ApiResponse<List<TransactionDTO>>
+            {
+                Data = transactions.ToList(),
+                Meta = new ApiMeta
+                {
+                    RequestId = Guid.NewGuid().ToString(),
+                    Timestamp = DateTime.UtcNow,
+                    Pagination = pagination
+                }
+            });
+        }
+
+        /// <summary>
+        /// Delete Transaction
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTransaction(string id)
         {
