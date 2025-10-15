@@ -499,6 +499,3 @@
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/DonationsTracker.Tests.AssemblyInfo.cs
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/DonationsTracker.Tests.csproj.CoreCompileInputs.cache
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/DonationsTracker.Tests.sourcelink.json
-/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/DonationsTracker.Tests.dll
-/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/refint/DonationsTracker.Tests.dll
-/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Tests/obj/Debug/net8.0/DonationsTracker.Tests.pdb

@@ -160,6 +160,7 @@
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Backend-N-tier/DonationsTracker.Api/bin/Debug/net8.0/Pipelines.Sockets.Unofficial.dll
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Backend-N-tier/DonationsTracker.Api/bin/Debug/net8.0/StackExchange.Redis.dll
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Backend-N-tier/DonationsTracker.Api/bin/Debug/net8.0/System.Diagnostics.DiagnosticSource.dll
+/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/bin/Debug/net8.0/Seed/transactions.json
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/bin/Debug/net8.0/appsettings.Development.json
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/bin/Debug/net8.0/appsettings.json
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/bin/Debug/net8.0/DonationsTracker.Api
@@ -308,6 +309,7 @@
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/obj/Debug/net8.0/DonationsTracker.Api.csproj.CoreCompileInputs.cache
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/obj/Debug/net8.0/DonationsTracker.Api.MvcApplicationPartsAssemblyInfo.cs
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/obj/Debug/net8.0/DonationsTracker.Api.MvcApplicationPartsAssemblyInfo.cache
+/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/obj/Debug/net8.0/DonationsTracker.Api.sourcelink.json
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/obj/Debug/net8.0/staticwebassets.build.json
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/obj/Debug/net8.0/staticwebassets.development.json
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/obj/Debug/net8.0/staticwebassets/msbuild.DonationsTracker.Api.Microsoft.AspNetCore.StaticWebAssets.props
@@ -322,5 +324,3 @@
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/obj/Debug/net8.0/DonationsTracker.Api.pdb
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/obj/Debug/net8.0/DonationsTracker.Api.genruntimeconfig.cache
 /Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/obj/Debug/net8.0/ref/DonationsTracker.Api.dll
-/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/obj/Debug/net8.0/DonationsTracker.Api.sourcelink.json
-/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/bin/Debug/net8.0/Seed/transactions.json
