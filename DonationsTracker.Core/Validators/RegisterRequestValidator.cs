@@ -1,7 +1,7 @@
 using DonationsTracker.Core.Models;
 using DonationsTracker.Core.Security;
 using FluentValidation;
-using Microsoft.AspNetCore.Http; 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace DonationsTracker.Core.Validators
@@ -21,7 +21,7 @@ namespace DonationsTracker.Core.Validators
             _botService = botService;
             _logger = logger;
 
-            // ✅ Input validation rules
+            // Input validation rules
             RuleFor(x => x.FirstName)
                 .NotEmpty().WithMessage("First name is required.")
                 .MaximumLength(50).WithMessage("First name cannot exceed 50 characters.");
@@ -38,7 +38,7 @@ namespace DonationsTracker.Core.Validators
                 .NotEmpty().WithMessage("Password is required.")
                 .MinimumLength(6).WithMessage("Password must be at least 6 characters long.");
 
-            // ✅ Bot detection
+            // Bot detection
             RuleFor(x => x)
                 .Must(NotBeBotRequest)
                 .WithMessage("Suspicious or automated request detected. Please try again manually.");
@@ -54,7 +54,7 @@ namespace DonationsTracker.Core.Validators
                 var isBot = _botService.IsSuspiciousRequest(httpRequest);
                 if (isBot)
                 {
-                    _logger.LogWarning("🚫 Bot-like activity detected for email: {Email}", request.Email);
+                    _logger.LogWarning("Bot-like activity detected for email: {Email}", request.Email);
                     return false;
                 }
                 return true;

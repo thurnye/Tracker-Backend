@@ -258,7 +258,7 @@ namespace DonationsTracker.DB.Repositories
                     WalletType = w.WalletType ?? "General",
                     Currency = w.Currency ?? "CAD",
 
-                    // ✅ Fixed: Use WalletType (string), not GetType, and use double quotes for string literals
+                
                     Color = w.WalletType == "Bank"
                         ? "#3b82f6"        // blue
                         : w.WalletType == "Credit"

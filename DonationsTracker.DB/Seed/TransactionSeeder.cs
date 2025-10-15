@@ -11,14 +11,14 @@ namespace DonationsTracker.DB.Seed
         {
             if (await context.Transactions.AnyAsync())
             {
-                Console.WriteLine("⚠️ Transactions already exist — skipping seed.");
+                Console.WriteLine("Transactions already exist — skipping seed.");
                 return;
             }
 
             var jsonPath = Path.Combine(AppContext.BaseDirectory, "Seed", "transactions.json");
             if (!File.Exists(jsonPath))
             {
-                Console.WriteLine($"❌ Seed file not found at {jsonPath}");
+                Console.WriteLine($" Seed file not found at {jsonPath}");
                 return;
             }
 
@@ -76,7 +76,7 @@ namespace DonationsTracker.DB.Seed
                         ? "3a33dbf4-02f8-43ef-b546-28bada90220f"
                         : "35443dfc-0099-471b-a6b0-cf920581cc31";
 
-                    // ✅ Pick a random categoryId from the fixed list
+                    // Pick a random categoryId from the fixed list
                     var categoryId = categoryPool[random.Next(categoryPool.Count)];
 
                     DateTime transactionDate = DateTime.TryParse(raw.TransactionDate, out var parsedDate)
@@ -110,7 +110,7 @@ namespace DonationsTracker.DB.Seed
                 catch (Exception ex)
                 {
                     skipped++;
-                    Console.WriteLine($"⚠️ Skipped record due to error: {ex.Message}");
+                    Console.WriteLine($"Skipped record due to error: {ex.Message}");
                 }
             }
 
@@ -120,10 +120,10 @@ namespace DonationsTracker.DB.Seed
             {
                 await context.Transactions.AddRangeAsync(batch);
                 await context.SaveChangesAsync();
-                Console.WriteLine($"💾 Saved batch of {batch.Length} records...");
+                Console.WriteLine($"Saved batch of {batch.Length} records...");
             }
 
-            Console.WriteLine("✅ Transaction seeding completed successfully!");
+            Console.WriteLine("Transaction seeding completed successfully!");
         }
 
         private class RawTransaction

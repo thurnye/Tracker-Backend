@@ -49,7 +49,7 @@ namespace DonationsTracker.Core.Services
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation("✅ Cache hit for wallets {UserId}", userId);
+                    _logger.LogInformation("Cache hit for wallets {UserId}", userId);
                     return JsonSerializer.Deserialize<IEnumerable<WalletDTO>>(cached)!;
                 }
             }
@@ -66,7 +66,7 @@ namespace DonationsTracker.Core.Services
                 await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(mapped),
                     new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _defaultTtl });
                 await _invalidation.TrackKeyAsync(WalletListPrefix, cacheKey);
-                _logger.LogInformation("💾 Cached wallets for {UserId}", userId);
+                _logger.LogInformation("Cached wallets for {UserId}", userId);
             }
             catch (Exception ex)
             {
@@ -85,7 +85,7 @@ namespace DonationsTracker.Core.Services
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation("✅ Cache hit for wallet {Id}", id);
+                    _logger.LogInformation("Cache hit for wallet {Id}", id);
                     return JsonSerializer.Deserialize<WalletDTO>(cached);
                 }
             }
@@ -105,7 +105,7 @@ namespace DonationsTracker.Core.Services
                 await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(mapped),
                     new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _defaultTtl });
                 await _invalidation.TrackKeyAsync(WalletItemPrefix, cacheKey);
-                _logger.LogInformation("💾 Cached wallet {Id}", id);
+                _logger.LogInformation("Cached wallet {Id}", id);
             }
             catch (Exception ex)
             {
@@ -173,7 +173,7 @@ namespace DonationsTracker.Core.Services
 
             await _invalidation.InvalidateKeyAsync($"{WalletItemPrefix}{saved.Id}");
             await _invalidation.InvalidateByPrefixAsync(WalletListPrefix);
-            _logger.LogInformation("🧹 Cache invalidated after wallet create/update {Id}", saved.Id);
+            _logger.LogInformation("Cache invalidated after wallet create/update {Id}", saved.Id);
 
             return saved.ToWalletDTO();
         }
@@ -185,7 +185,7 @@ namespace DonationsTracker.Core.Services
             {
                 await _invalidation.InvalidateKeyAsync($"{WalletItemPrefix}{id}");
                 await _invalidation.InvalidateByPrefixAsync(WalletListPrefix);
-                _logger.LogInformation("🧹 Cache invalidated after deleting wallet {Id}", id);
+                _logger.LogInformation("Cache invalidated after deleting wallet {Id}", id);
             }
             return deleted;
         }

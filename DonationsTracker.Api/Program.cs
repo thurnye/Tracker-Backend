@@ -218,7 +218,7 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"⚠️ Database migration failed: {ex.Message}");
+        Console.WriteLine($"Database migration failed: {ex.Message}");
     }
 }
 

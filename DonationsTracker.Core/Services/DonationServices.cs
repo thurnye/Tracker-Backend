@@ -51,7 +51,7 @@ namespace DonationsTracker.Core
                     var cachedResult = JsonSerializer.Deserialize<(List<Donation> Items, int TotalCount)>(json);
                     if (cachedResult.Items != null)
                     {
-                        _logger.LogInformation("✅ Cache hit for key: {CacheKey}", cacheKey);
+                        _logger.LogInformation("Cache hit for key: {CacheKey}", cacheKey);
                         return cachedResult;
                     }
                 }
@@ -86,7 +86,7 @@ namespace DonationsTracker.Core
 
                 _cache.Set(cacheKey, compressed, cacheOptions);
                 _invalidation.TrackKeyAsync(DonationListPrefix, cacheKey).GetAwaiter().GetResult();
-                _logger.LogInformation("💾 Cached result for key: {CacheKey}", cacheKey);
+                _logger.LogInformation("Cached result for key: {CacheKey}", cacheKey);
             }
             catch (Exception ex)
             {
@@ -105,7 +105,7 @@ namespace DonationsTracker.Core
                 var cachedDonation = _cache.GetString(cacheKey);
                 if (!string.IsNullOrEmpty(cachedDonation))
                 {
-                    _logger.LogInformation("✅ Cache hit for donation ID: {Id}", id);
+                    _logger.LogInformation("Cache hit for donation ID: {Id}", id);
                     return JsonSerializer.Deserialize<Donation>(cachedDonation)!;
                 }
             }
@@ -127,7 +127,7 @@ namespace DonationsTracker.Core
 
                 _cache.SetString(cacheKey, JsonSerializer.Serialize(donation), cacheOptions);
                 _invalidation.TrackKeyAsync(DonationItemPrefix, cacheKey).GetAwaiter().GetResult();
-                _logger.LogInformation("💾 Cached donation ID {Id}", id);
+                _logger.LogInformation("Cached donation ID {Id}", id);
             }
             catch (Exception ex)
             {
@@ -144,7 +144,7 @@ namespace DonationsTracker.Core
             _invalidation.InvalidateKeyAsync($"{DonationItemPrefix}{saved.Id}").GetAwaiter().GetResult();
             _invalidation.InvalidateByPrefixAsync(DonationListPrefix).GetAwaiter().GetResult();
 
-            _logger.LogInformation("🧹 Cache invalidated after Create/Update for donation ID {Id}", saved.Id);
+            _logger.LogInformation("Cache invalidated after Create/Update for donation ID {Id}", saved.Id);
             return saved;
         }
 
@@ -155,7 +155,7 @@ namespace DonationsTracker.Core
             _invalidation.InvalidateKeyAsync($"{DonationItemPrefix}{id}").GetAwaiter().GetResult();
             _invalidation.InvalidateByPrefixAsync(DonationListPrefix).GetAwaiter().GetResult();
 
-            _logger.LogInformation("🧹 Cache invalidated after Delete for donation ID {Id}", id);
+            _logger.LogInformation("Cache invalidated after Delete for donation ID {Id}", id);
         }
     }
 }

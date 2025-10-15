@@ -48,7 +48,7 @@ namespace DonationsTracker.Core.Services
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation("✅ Cache hit for categories {UserId}", userId);
+                    _logger.LogInformation("Cache hit for categories {UserId}", userId);
                     return JsonSerializer.Deserialize<IEnumerable<Category>>(cached)!;
                 }
             }
@@ -64,7 +64,7 @@ namespace DonationsTracker.Core.Services
                 await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(categories),
                     new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _defaultTtl });
                 await _invalidation.TrackKeyAsync(CategoryListPrefix, cacheKey);
-                _logger.LogInformation("💾 Cached categories for {UserId}", userId);
+                _logger.LogInformation("Cached categories for {UserId}", userId);
             }
             catch (Exception ex)
             {
@@ -83,7 +83,7 @@ namespace DonationsTracker.Core.Services
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation("✅ Cache hit for category {Id}", id);
+                    _logger.LogInformation("Cache hit for category {Id}", id);
                     return JsonSerializer.Deserialize<Category>(cached);
                 }
             }
@@ -101,7 +101,7 @@ namespace DonationsTracker.Core.Services
                 await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(category),
                     new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _defaultTtl });
                 await _invalidation.TrackKeyAsync(CategoryItemPrefix, cacheKey);
-                _logger.LogInformation("💾 Cached category {Id}", id);
+                _logger.LogInformation("Cached category {Id}", id);
             }
             catch (Exception ex)
             {
@@ -149,7 +149,7 @@ namespace DonationsTracker.Core.Services
 
             await _invalidation.InvalidateKeyAsync($"{CategoryItemPrefix}{saved.Id}");
             await _invalidation.InvalidateByPrefixAsync(CategoryListPrefix);
-            _logger.LogInformation("🧹 Cache invalidated for category {Id}", saved.Id);
+            _logger.LogInformation("Cache invalidated for category {Id}", saved.Id);
 
             return saved;
         }

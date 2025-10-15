@@ -48,7 +48,7 @@ namespace DonationsTracker.Core.Services
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation("✅ Cache hit for dashboard analytics {UserId}", userId);
+                    _logger.LogInformation(" Cache hit for dashboard analytics {UserId}", userId);
                     return JsonSerializer.Deserialize<DashboardAnalyticsDTO>(cached)!;
                 }
             }
@@ -65,7 +65,7 @@ namespace DonationsTracker.Core.Services
                     new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _defaultTtl });
 
                 await _invalidation.TrackKeyAsync(DashboardCachePrefix, cacheKey);
-                _logger.LogInformation("💾 Cached dashboard analytics for {UserId}", userId);
+                _logger.LogInformation("Cached dashboard analytics for {UserId}", userId);
             }
             catch (Exception ex)
             {
@@ -86,7 +86,7 @@ namespace DonationsTracker.Core.Services
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation("✅ Cache hit for full analysis {UserId}", userId);
+                    _logger.LogInformation("Cache hit for full analysis {UserId}", userId);
                     return JsonSerializer.Deserialize<AnalyticsDTO>(cached)!;
                 }
             }
@@ -103,7 +103,7 @@ namespace DonationsTracker.Core.Services
                     new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _defaultTtl });
 
                 await _invalidation.TrackKeyAsync(FullAnalysisCachePrefix, cacheKey);
-                _logger.LogInformation("💾 Cached full analysis for {UserId}", userId);
+                _logger.LogInformation("Cached full analysis for {UserId}", userId);
             }
             catch (Exception ex)
             {

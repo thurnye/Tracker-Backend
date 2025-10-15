@@ -30,7 +30,7 @@ public class DatabaseFixture : IAsyncLifetime
 
         _masterConnectionString = _connectionString.Replace("Database=DonationTracker_TEST", "Database=master");
 
-        // ✅ Create factory immediately
+        // Create factory immediately
         Factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {

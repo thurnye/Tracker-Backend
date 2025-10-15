@@ -49,7 +49,7 @@ namespace DonationsTracker.Core.Services
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation("✅ Cache hit for goals {UserId}", userId);
+                    _logger.LogInformation("Cache hit for goals {UserId}", userId);
                     return JsonSerializer.Deserialize<IEnumerable<GoalDTO>>(cached)!;
                 }
             }
@@ -67,7 +67,7 @@ namespace DonationsTracker.Core.Services
                     new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _defaultTtl });
 
                 await _invalidation.TrackKeyAsync(GoalListPrefix, cacheKey);
-                _logger.LogInformation("💾 Cached goals for {UserId}", userId);
+                _logger.LogInformation("Cached goals for {UserId}", userId);
             }
             catch (Exception ex)
             {
@@ -85,7 +85,7 @@ namespace DonationsTracker.Core.Services
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation("✅ Cache hit for goal {Id}", id);
+                    _logger.LogInformation("Cache hit for goal {Id}", id);
                     return JsonSerializer.Deserialize<GoalDTO>(cached);
                 }
             }
@@ -105,7 +105,7 @@ namespace DonationsTracker.Core.Services
                     new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _defaultTtl });
 
                 await _invalidation.TrackKeyAsync(GoalItemPrefix, cacheKey);
-                _logger.LogInformation("💾 Cached goal {Id}", id);
+                _logger.LogInformation("Cached goal {Id}", id);
             }
             catch (Exception ex)
             {
@@ -176,7 +176,7 @@ namespace DonationsTracker.Core.Services
             await _invalidation.InvalidateKeyAsync($"{GoalItemPrefix}{saved.Id}");
             await _invalidation.InvalidateByPrefixAsync(GoalListPrefix);
 
-            _logger.LogInformation("🧹 Cache invalidated for goal {Id}", saved.Id);
+            _logger.LogInformation("Cache invalidated for goal {Id}", saved.Id);
             return saved.ToGoalDTO();
         }
 

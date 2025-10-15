@@ -39,12 +39,12 @@ namespace DonationsTracker.Api.Controllers
                 });
             }
 
-            // ✅ Register user and get access/refresh tokens
+            // Register user and get access/refresh tokens
             var response = await _authService.RegisterAsync(model);
             var accessToken = response.AccessToken;
             var refreshToken = response.RefreshToken;
 
-            // 🔐 Store refresh token securely in HttpOnly cookie
+            // Store refresh token securely in HttpOnly cookie
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
@@ -53,9 +53,9 @@ namespace DonationsTracker.Api.Controllers
                 Expires = DateTime.UtcNow.AddDays(7)
             };
             Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
-            Console.WriteLine($"[Auth] ✅ Refresh token cookie set for user");
+            Console.WriteLine($"[Auth] Refresh token cookie set for user");
 
-            // ✅ Send access token via secure response header
+            // Send access token via secure response header
             Response.Headers.Append("X-Access-Token", accessToken);
             Response.Headers.Append("Access-Control-Expose-Headers", "X-Access-Token");
 
@@ -70,7 +70,7 @@ namespace DonationsTracker.Api.Controllers
             var accessToken = response.AccessToken;
             var refreshToken = response.RefreshToken;
 
-            // 🔐 Set refresh token as HttpOnly cookie
+            // Set refresh token as HttpOnly cookie
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
@@ -79,9 +79,9 @@ namespace DonationsTracker.Api.Controllers
                 Expires = DateTime.UtcNow.AddDays(7)
             };
             Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
-            Console.WriteLine($"[Auth] ✅ Refresh token cookie set for user");
+            Console.WriteLine($"[Auth] Refresh token cookie set for user");
 
-            // ✅ Return access token via response header
+            // Return access token via response header
             Response.Headers.Append("X-Access-Token", accessToken);
             Response.Headers.Append("Access-Control-Expose-Headers", "X-Access-Token");
 
@@ -97,18 +97,18 @@ namespace DonationsTracker.Api.Controllers
 
             if (!Request.Cookies.TryGetValue("refreshToken", out var refreshToken))
             {
-                Console.WriteLine("[Auth Refresh] ❌ No refreshToken cookie found");
+                Console.WriteLine("[Auth Refresh]  No refreshToken cookie found");
                 return Unauthorized(new { message = "Missing refresh token" });
             }
 
-            Console.WriteLine($"[Auth Refresh] ✅ Refresh token found in cookie");
+            Console.WriteLine($"[Auth Refresh] Refresh token found in cookie");
 
             try
             {
                 var tokens = await _authService.RefreshTokensAsync(refreshToken);
-                Console.WriteLine($"[Auth Refresh] ✅ Tokens generated successfully");
+                Console.WriteLine($"[Auth Refresh] Tokens generated successfully");
 
-                // 🔐 Replace cookie with new refresh token
+                // Replace cookie with new refresh token
                 var cookieOptions = new CookieOptions
                 {
                     HttpOnly = true,
@@ -117,21 +117,21 @@ namespace DonationsTracker.Api.Controllers
                     Expires = DateTime.UtcNow.AddDays(7)
                 };
                 Response.Cookies.Append("refreshToken", tokens.RefreshToken, cookieOptions);
-                Console.WriteLine($"[Auth Refresh] ✅ New refresh token cookie set");
+                Console.WriteLine($"[Auth Refresh] New refresh token cookie set");
 
-                // ✅ Return access token via header
+                // Return access token via header
                 Response.Headers.Append("X-Access-Token", tokens.AccessToken);
                 Response.Headers.Append("Access-Control-Expose-Headers", "X-Access-Token");
-                Console.WriteLine($"[Auth Refresh] ✅ Access token header set");
+                Console.WriteLine($"[Auth Refresh] Access token header set");
 
                 // Return user data in the response body
-                Console.WriteLine($"[Auth Refresh] ✅ Returning user data: {tokens.User.Email}");
+                Console.WriteLine($"[Auth Refresh] Returning user data: {tokens.User.Email}");
                 return Ok(new ApiResponse<object> { Data = tokens.User });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Auth Refresh] ❌ Error: {ex.Message}");
-                Console.WriteLine($"[Auth Refresh] ❌ Stack trace: {ex.StackTrace}");
+                Console.WriteLine($"[Auth Refresh]  Error: {ex.Message}");
+                Console.WriteLine($"[Auth Refresh]  Stack trace: {ex.StackTrace}");
                 return Unauthorized(new { message = "Invalid refresh token", error = ex.Message });
             }
         }

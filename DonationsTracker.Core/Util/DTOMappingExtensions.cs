@@ -7,7 +7,7 @@ namespace DonationsTracker.Core.Helpers
 {
     public static class DTOMappingExtensions
     {
-        // ✅ Already existing:
+        // Already existing:
         public static UserLiteDTO ToLiteDTO(this ApplicationUser user) => new()
         {
             Id = user.Id,
@@ -72,7 +72,7 @@ namespace DonationsTracker.Core.Helpers
             Category = g.Category?.ToLiteDTO()
         };
 
-        // ✅ NEW: Transaction mapping
+        // NEW: Transaction mapping
         public static TransactionDTO ToTransactionDTO(this Transaction t) => new()
         {
             Id = t.Id,
@@ -96,7 +96,7 @@ namespace DonationsTracker.Core.Helpers
             Category = t.Category?.ToLiteDTO()
         };
 
-        // ✅ NEW: Wallet mapping
+        // NEW: Wallet mapping
         public static WalletDTO ToWalletDTO(this Wallet w) => new()
         {
             Id = w.Id,

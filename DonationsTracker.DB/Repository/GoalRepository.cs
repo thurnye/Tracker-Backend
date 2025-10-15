@@ -47,7 +47,7 @@ namespace DonationsTracker.DB.Repositories
             var goal = await _context.Goals.FindAsync(id);
             if (goal == null) return false;
 
-            goal.IsActive = false; // ✅ Soft delete
+            goal.IsActive = false; // Soft delete
             _context.Goals.Update(goal);
             await _context.SaveChangesAsync();
 

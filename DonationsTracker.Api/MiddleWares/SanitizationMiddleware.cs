@@ -20,7 +20,7 @@ namespace DonationsTracker.Api.Middlewares.Security
         {
             try
             {
-                // ✅ Sanitize query parameters
+                // Sanitize query parameters
                 if (context.Request.Query.Count > 0)
                 {
                     var sanitizedQuery = new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>();
@@ -32,7 +32,7 @@ namespace DonationsTracker.Api.Middlewares.Security
                     context.Request.QueryString = QueryString.Create(sanitizedQuery);
                 }
 
-                // ✅ Sanitize JSON request body
+                // Sanitize JSON request body
                 if (context.Request.ContentType?.Contains("application/json", StringComparison.OrdinalIgnoreCase) == true)
                 {
                     context.Request.EnableBuffering();
@@ -52,7 +52,7 @@ namespace DonationsTracker.Api.Middlewares.Security
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogWarning(ex, "⚠️ Failed to sanitize JSON body.");
+                            _logger.LogWarning(ex, "Failed to sanitize JSON body.");
                         }
                     }
                 }
@@ -61,7 +61,7 @@ namespace DonationsTracker.Api.Middlewares.Security
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ Error during sanitization middleware.");
+                _logger.LogError(ex, " Error during sanitization middleware.");
 
                 var response = new ApiResponse<object>
                 {

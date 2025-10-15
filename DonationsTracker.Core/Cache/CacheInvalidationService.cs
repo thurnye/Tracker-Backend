@@ -37,7 +37,7 @@ namespace DonationsTracker.Core.Cache
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "⚠️ Failed to track cache key for prefix {Prefix}", prefix);
+                _logger.LogWarning(ex, "Failed to track cache key for prefix {Prefix}", prefix);
             }
         }
 
@@ -58,16 +58,16 @@ namespace DonationsTracker.Core.Cache
                     await Task.WhenAll(tasks);
                     await db.KeyDeleteAsync(keySet);
 
-                    _logger.LogInformation("🧹 Cleared {Count} cached items for prefix {Prefix}", keys.Count, prefix);
+                    _logger.LogInformation("Cleared {Count} cached items for prefix {Prefix}", keys.Count, prefix);
                 }
                 else
                 {
-                    _logger.LogInformation("ℹ️ No tracked keys found for prefix {Prefix}", prefix);
+                    _logger.LogInformation("No tracked keys found for prefix {Prefix}", prefix);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "⚠️ Cache invalidation failed for prefix {Prefix}", prefix);
+                _logger.LogWarning(ex, "Cache invalidation failed for prefix {Prefix}", prefix);
             }
         }
 
@@ -79,11 +79,11 @@ namespace DonationsTracker.Core.Cache
             try
             {
                 await _cache.RemoveAsync(key);
-                _logger.LogInformation("🗑️ Cache key invalidated: {Key}", key);
+                _logger.LogInformation("Cache key invalidated: {Key}", key);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "⚠️ Failed to invalidate cache key {Key}", key);
+                _logger.LogWarning(ex, "Failed to invalidate cache key {Key}", key);
             }
         }
 
@@ -101,7 +101,7 @@ namespace DonationsTracker.Core.Cache
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "⚠️ Failed to list tracked keys for prefix {Prefix}", prefix);
+                _logger.LogWarning(ex, "Failed to list tracked keys for prefix {Prefix}", prefix);
                 return Enumerable.Empty<string>();
             }
         }

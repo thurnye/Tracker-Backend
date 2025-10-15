@@ -34,7 +34,7 @@ namespace DonationsTracker.DB.Seed
 
             var result = await userManager.CreateAsync(user, "strongPassword123!");
             if (!result.Succeeded)
-                throw new Exception($"❌ Failed to seed user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                throw new Exception($" Failed to seed user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
 
             return user;
         }

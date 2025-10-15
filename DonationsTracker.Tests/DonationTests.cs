@@ -17,7 +17,7 @@ public class DonationTests
         _db = db;
         _client = db.Factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 
-        // ✅ Add these headers to bypass bot protection
+        // Add these headers to bypass bot protection
         _client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (UnitTestClient)");
         _client.DefaultRequestHeaders.Add("Referer", "https://localhost/test");
     }
