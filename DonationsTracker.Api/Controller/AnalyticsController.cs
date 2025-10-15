@@ -50,5 +50,22 @@ namespace DonationsTracker.Api.Controllers
                 });
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetFullAnalysis()
+        {
+            var result = await _analyticsService.GetFullAnalysisAsync();
+
+            var response = new ApiResponse<object>
+            {
+                Data = result,
+                Meta = new ApiMeta
+                {
+                    Pagination = null
+                }
+            };
+
+            return Ok(response);
+        }
     }
 }

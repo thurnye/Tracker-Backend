@@ -11,6 +11,10 @@ namespace DonationsTracker.Core.DTOs
         public List<BudgetSummaryDTO> BudgetGoals { get; set; } = new();
         public List<TransactionSummaryDTO> TransactionHistory { get; set; } = new();
         public List<PaymentHistoryDTO> PaymentsHistory { get; set; } = new();
+        public List<WalletSpendingDTO> WalletSpending { get; set; } = new(); 
+        public List<TransactionSummaryDTO> LatestTransactions { get; set; } = new();
+
+
     }
 
     public record BalanceCardDTO(string Id, string Title, decimal Amount, decimal Change, decimal ChangePercentage);
@@ -30,6 +34,8 @@ namespace DonationsTracker.Core.DTOs
         public double Percentage { get; set; }
         public decimal Amount { get; set; }
         public string Color { get; set; } = "#10b981";
+        public string Icon { get; set; } = "credit-card";
+
     }
 
     public record MonthlySummaryDTO
@@ -74,16 +80,29 @@ namespace DonationsTracker.Core.DTOs
     }
 
     public record PaymentHistoryDTO
-{
-    public string Id { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-    public string Date { get; set; } = string.Empty;
-    public decimal Amount { get; set; }
-    public string Currency { get; set; }
-    public string Status { get; set; }
-    public string Category { get; set; } 
-    public string Icon { get; set; } 
-    public string Color { get; set; } 
-}
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Date { get; set; } = string.Empty;
+        public decimal Amount { get; set; }
+        public string Currency { get; set; }
+        public string Status { get; set; }
+        public string Category { get; set; }
+        public string Icon { get; set; }
+        public string Color { get; set; }
+    }
+
+    public record WalletSpendingDTO
+    {
+        public string WalletId { get; set; } = string.Empty;
+        public string WalletName { get; set; } = string.Empty;
+        public string WalletType { get; set; } = string.Empty;
+        public string Currency { get; set; } = "CAD";
+        public decimal TotalIncome { get; set; }
+        public decimal TotalExpense { get; set; }
+        public decimal NetBalance { get; set; }
+        public string Icon { get; set; }
+        public string Color { get; set; }
+    }
 
 }

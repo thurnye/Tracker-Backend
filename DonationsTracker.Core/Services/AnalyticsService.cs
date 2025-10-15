@@ -19,7 +19,8 @@ namespace DonationsTracker.Core.Services
         private readonly CacheInvalidationService _invalidation;
         private readonly TimeSpan _defaultTtl;
 
-        private const string CachePrefix = "analytics:dashboard:";
+        private const string DashboardCachePrefix = "analytics:dashboard:";
+        private const string FullAnalysisCachePrefix = "analytics:full:";
 
         public AnalyticsService(
             IAnalyticsRepository repo,
@@ -36,23 +37,24 @@ namespace DonationsTracker.Core.Services
             _invalidation = invalidation;
         }
 
+        // === DASHBOARD ANALYTICS ===
         public async Task<DashboardAnalyticsDTO> GetDashboardAnalyticsAsync()
         {
             var userId = _userContext.GetUserId();
-            var cacheKey = $"{CachePrefix}{userId}";
+            var cacheKey = $"{DashboardCachePrefix}{userId}";
 
             try
             {
                 var cached = await _cache.GetStringAsync(cacheKey);
                 if (!string.IsNullOrEmpty(cached))
                 {
-                    _logger.LogInformation("✅ Cache hit for analytics {UserId}", userId);
+                    _logger.LogInformation("✅ Cache hit for dashboard analytics {UserId}", userId);
                     return JsonSerializer.Deserialize<DashboardAnalyticsDTO>(cached)!;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Redis read failed for analytics {UserId}", userId);
+                _logger.LogWarning(ex, "Redis read failed for dashboard analytics {UserId}", userId);
             }
 
             var analytics = await _repo.GetDashboardAnalyticsAsync(userId);
@@ -62,15 +64,53 @@ namespace DonationsTracker.Core.Services
                 await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(analytics),
                     new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _defaultTtl });
 
-                await _invalidation.TrackKeyAsync(CachePrefix, cacheKey);
-                _logger.LogInformation("💾 Cached analytics for {UserId}", userId);
+                await _invalidation.TrackKeyAsync(DashboardCachePrefix, cacheKey);
+                _logger.LogInformation("💾 Cached dashboard analytics for {UserId}", userId);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to cache analytics {UserId}", userId);
+                _logger.LogWarning(ex, "Failed to cache dashboard analytics {UserId}", userId);
             }
 
             return analytics;
+        }
+
+        // === FULL ANALYSIS ===
+        public async Task<AnalyticsDTO> GetFullAnalysisAsync()
+        {
+            var userId = _userContext.GetUserId();
+            var cacheKey = $"{FullAnalysisCachePrefix}{userId}";
+
+            try
+            {
+                var cached = await _cache.GetStringAsync(cacheKey);
+                if (!string.IsNullOrEmpty(cached))
+                {
+                    _logger.LogInformation("✅ Cache hit for full analysis {UserId}", userId);
+                    return JsonSerializer.Deserialize<AnalyticsDTO>(cached)!;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Redis read failed for full analysis {UserId}", userId);
+            }
+
+            var analysis = await _repo.GetFullAnalysisAsync(userId);
+
+            try
+            {
+                await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(analysis),
+                    new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = _defaultTtl });
+
+                await _invalidation.TrackKeyAsync(FullAnalysisCachePrefix, cacheKey);
+                _logger.LogInformation("💾 Cached full analysis for {UserId}", userId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to cache full analysis {UserId}", userId);
+            }
+
+            return analysis;
         }
     }
 }
