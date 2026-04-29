@@ -1,11 +1,1 @@
-{
-  "Version": 1,
-  "Hash": "kHXZijOKxdO2xp/YkjUp2uzbe4vnSnP40fWhgUSjo5w=",
-  "Source": "DonationsTracker.Api",
-  "BasePath": "_content/DonationsTracker.Api",
-  "Mode": "Default",
-  "ManifestType": "Build",
-  "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
-}
+{"Version":1,"Hash":"RIHr4oVUNTk9pA/1RCus7BZk7JkpuxvfmQ3kZK+Bq8Y=","Source":"DonationsTracker.Api","BasePath":"/","Mode":"Root","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}

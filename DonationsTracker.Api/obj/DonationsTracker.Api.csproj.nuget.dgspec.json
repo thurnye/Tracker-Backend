@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/DonationsTracker.Api.csproj": {}
+    "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.Api/DonationsTracker.Api.csproj": {}
   },
   "projects": {
-    "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/DonationsTracker.Api.csproj": {
+    "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.Api/DonationsTracker.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/DonationsTracker.Api.csproj",
+        "projectUniqueName": "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.Api/DonationsTracker.Api.csproj",
         "projectName": "DonationsTracker.Api",
-        "projectPath": "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/DonationsTracker.Api.csproj",
-        "packagesPath": "/Users/dan_tonye/.nuget/packages/",
-        "outputPath": "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Api/obj/",
+        "projectPath": "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.Api/DonationsTracker.Api.csproj",
+        "packagesPath": "/Users/gudi/.nuget/packages/",
+        "outputPath": "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.Api/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/dan_tonye/.nuget/NuGet/NuGet.Config"
+          "/Users/gudi/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -26,8 +26,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Core/DonationsTracker.Core.csproj": {
-                "projectPath": "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Core/DonationsTracker.Core.csproj"
+              "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.Core/DonationsTracker.Core.csproj": {
+                "projectPath": "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.Core/DonationsTracker.Core.csproj"
               }
             }
           }
@@ -41,7 +41,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
         "net8.0": {
@@ -89,6 +90,20 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.osx-arm64",
+              "version": "[8.0.24, 8.0.24]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -97,21 +112,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.414/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.103/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Core/DonationsTracker.Core.csproj": {
+    "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.Core/DonationsTracker.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Core/DonationsTracker.Core.csproj",
+        "projectUniqueName": "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.Core/DonationsTracker.Core.csproj",
         "projectName": "DonationsTracker.Core",
-        "projectPath": "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Core/DonationsTracker.Core.csproj",
-        "packagesPath": "/Users/dan_tonye/.nuget/packages/",
-        "outputPath": "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.Core/obj/",
+        "projectPath": "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.Core/DonationsTracker.Core.csproj",
+        "packagesPath": "/Users/gudi/.nuget/packages/",
+        "outputPath": "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.Core/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/dan_tonye/.nuget/NuGet/NuGet.Config"
+          "/Users/gudi/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -123,8 +138,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.DB/DonationsTracker.DB.csproj": {
-                "projectPath": "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.DB/DonationsTracker.DB.csproj"
+              "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.DB/DonationsTracker.DB.csproj": {
+                "projectPath": "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.DB/DonationsTracker.DB.csproj"
               }
             }
           }
@@ -138,7 +153,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
         "net8.0": {
@@ -168,26 +184,36 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.414/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.103/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.DB/DonationsTracker.DB.csproj": {
+    "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.DB/DonationsTracker.DB.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.DB/DonationsTracker.DB.csproj",
+        "projectUniqueName": "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.DB/DonationsTracker.DB.csproj",
         "projectName": "DonationsTracker.DB",
-        "projectPath": "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.DB/DonationsTracker.DB.csproj",
-        "packagesPath": "/Users/dan_tonye/.nuget/packages/",
-        "outputPath": "/Users/dan_tonye/Desktop/Programs 2/Startups/Volunteer/Tracker/Backend-N-tier/DonationsTracker.DB/obj/",
+        "projectPath": "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.DB/DonationsTracker.DB.csproj",
+        "packagesPath": "/Users/gudi/.nuget/packages/",
+        "outputPath": "/Users/gudi/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Programs/Startups/Tracker/Backend-N-tier/DonationsTracker.DB/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/dan_tonye/.nuget/NuGet/NuGet.Config"
+          "/Users/gudi/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -210,7 +236,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
         "net8.0": {
@@ -246,12 +273,22 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.414/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.103/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

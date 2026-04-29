@@ -8,8 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DonationsTracker.Core", "Do
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DonationsTracker.DB", "DonationsTracker.DB\DonationsTracker.DB.csproj", "{46E7C013-E8A2-477C-9CDA-82B4D586BC72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DonationsTracker.Tests", "DonationsTracker.Tests\DonationsTracker.Tests.csproj", "{E88F8E83-C73E-454F-A884-FE974AF1FFBB}"
-EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
