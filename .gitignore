@@ -1,0 +1,12 @@
+./DonationsTracker.Api/bin
+/DonationsTracker.Core/bin
+/DonationsTracker.DB/bin
+/DonationsTracker.Test/bin
+obj/
+
+## Build Folders
+[Bb]in/
+[Oo]bj/
+out/
+[Bb]uild/
+[Ll]og/
