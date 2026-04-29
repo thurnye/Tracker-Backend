@@ -29,7 +29,8 @@ namespace DonationsTracker.DB.Seed
                 State = "Ontario",
                 Country = "Canada",
                 PostalCode = "a1b2c3",
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                IsActive = true,
             };
 
             var result = await userManager.CreateAsync(user, "strongPassword123!");

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "kHXZijOKxdO2xp/YkjUp2uzbe4vnSnP40fWhgUSjo5w=",
+  "Source": "DonationsTracker.Api",
+  "BasePath": "_content/DonationsTracker.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

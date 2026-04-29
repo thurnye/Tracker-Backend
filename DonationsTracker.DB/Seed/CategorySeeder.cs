@@ -6,10 +6,10 @@ namespace DonationsTracker.DB.Seed
 {
     public static class CategorySeeder
     {
-        public static async Task SeedDefaultCategoriesAsync(DonationDbContext context, string userId)
+        public static async Task<IEnumerable<Category>> SeedDefaultCategoriesAsync(DonationDbContext context, string userId)
         {
             if (await context.Categories.AnyAsync(c => c.UserId == userId))
-                return; // skip if already seeded
+                return Enumerable.Empty<Category>(); // skip if already seeded
 
             var now = DateTime.UtcNow;
 
@@ -22,10 +22,7 @@ namespace DonationsTracker.DB.Seed
                 new Category { Id = Guid.NewGuid().ToString(), UserId = userId, Type = "Income", Name = "Refund", Icon = "RotateCcw", Color = "#ec4899", CreatedAt = now, IsActive = true },
                 new Category { Id = Guid.NewGuid().ToString(), UserId = userId, Type = "Income", Name = "Loan", Icon = "TrendingUp", Color = "#06b6d4", CreatedAt = now, IsActive = true },
                 new Category { Id = Guid.NewGuid().ToString(), UserId = userId, Type = "Income", Name = "Other", Icon = "EllipsisVertical", Color = "#64748b", CreatedAt = now, IsActive = true },
-            };
-
-            var expenseCategories = new[]
-            {
+            // Expense categories
                 new Category { Id = Guid.NewGuid().ToString(), UserId = userId, Type = "Expense", Name = "Beauty", Icon = "Sparkles", Color = "#06b6d4", CreatedAt = now, IsActive = true },
                 new Category { Id = Guid.NewGuid().ToString(), UserId = userId, Type = "Expense", Name = "Bills & Fees", Icon = "Receipt", Color = "#3b82f6", CreatedAt = now, IsActive = true },
                 new Category { Id = Guid.NewGuid().ToString(), UserId = userId, Type = "Expense", Name = "Car", Icon = "Car", Color = "#f59e0b", CreatedAt = now, IsActive = true },
@@ -44,8 +41,10 @@ namespace DonationsTracker.DB.Seed
                 new Category { Id = Guid.NewGuid().ToString(), UserId = userId, Type = "Expense", Name = "Gym", Icon = "Dumbbell", Color = "#ef4444", CreatedAt = now, IsActive = true },
             };
 
-            await context.Categories.AddRangeAsync(incomeCategories.Concat(expenseCategories));
+            await context.Categories.AddRangeAsync(incomeCategories);
             await context.SaveChangesAsync();
+
+            return incomeCategories;
         }
     }
 }
